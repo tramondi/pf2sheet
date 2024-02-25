@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  backend:
+    container_name: pf2sheet-backend
+    build:
+      dockerfile: ./apps/backend/Dockerfile
+    ports:
+      - 80:8080
+    depends_on:
+      - db
+    networks:
+      - db_network
+  db:
+    container_name: pf2sheet-db
+    image: postgres:15
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: "pf2sheet"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    networks:
+      - db_network
+networks:
+  db_network:
+    driver: bridge
