@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 import GeneralInfo from './blocks/GeneralInfo.vue'
 
-const props = defineProps<{ hpPerLvl: number }>()
+const props = defineProps<{ hp_per_lvl: number }>()
 
 const lvl = ref(1)
 </script>
@@ -21,7 +21,7 @@ const lvl = ref(1)
   />
   <div>
     <div>
-      <h3>Total HP: {{ lvl * props.hpPerLvl }}</h3>
+      <h3>Total HP: {{ lvl * props.hp_per_lvl }}</h3>
     </div>
     <div>
       <button type="button" class="btn btn-blue" @click="lvl--">Lvl -</button>

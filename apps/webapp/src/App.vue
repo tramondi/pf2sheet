@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import Charsheet from './components/Charsheet.vue'
+  import { VApp, VContainer } from 'vuetify/components'
 </script>
 
 <template>
-  <Charsheet :hpPerLvl="8"/>
+  <VApp>
+    <VContainer>
+      <main>
+        <router-view></router-view>
+      </main>
+    </VContainer>
+  </VApp>
 </template>

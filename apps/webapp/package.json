@@ -9,9 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.19"
+    "pinia": "^2.1.7",
+    "vue": "^3.4.19",
+    "vue-router": "^4.3.0",
+    "vuetify": "^3.5.6"
   },
   "devDependencies": {
+    "@mdi/font": "^7.4.47",
     "@vitejs/plugin-vue": "^5.0.4",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.35",
