@@ -6,6 +6,7 @@ import {
 } from 'vue-router'
 
 import Landing from '../views/Landing.vue'
+import MySheets from '../views/MySheets.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -18,6 +19,11 @@ const routes: RouteRecordRaw[] = [
     name: 'sheet',
     component: () => import('../views/Sheet.vue'),
     props: true,
+  },
+  {
+    path: '/my',
+    name: 'mysheets',
+    component: MySheets,
   },
 ]
 

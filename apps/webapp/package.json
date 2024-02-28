@@ -16,8 +16,10 @@
   },
   "devDependencies": {
     "@mdi/font": "^7.4.47",
+    "@mdi/js": "^7.4.47",
     "@vitejs/plugin-vue": "^5.0.4",
     "autoprefixer": "^10.4.17",
+    "material-design-icons-iconfont": "^6.7.0",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",

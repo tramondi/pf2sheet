@@ -1,9 +1,6 @@
-<script setup lang="ts">
-  import { VApp, VContainer } from 'vuetify/components'
-</script>
-
 <template>
   <VApp>
+    <Navbar/>
     <VContainer>
       <main>
         <router-view></router-view>
@@ -11,3 +8,7 @@
     </VContainer>
   </VApp>
 </template>
+
+<script setup lang="ts">
+import Navbar from './components/Navbar.vue';
+</script>
