@@ -9,11 +9,10 @@
           <VIcon small :icon="mdiPencil"></VIcon>
         </VBtn>
         <VSwitch right
-          @click="switched"
+          @update:model-value="switched"
           color="success"
           :loading="loading"
           :disabled="disabled"
-          :value="val"
         ></VSwitch>
         <VSwitch></VSwitch>
         <VBtn @click="clicked" right small>
@@ -37,15 +36,13 @@ const props = defineProps<{
 
 let loading = ref<String|Boolean>(false)
 let disabled = ref(false)
-let val = ref(false)
 const switched = () => {
-  disabled.value = true
   loading.value = 'warning'
-  val.value = !val.value
+  disabled.value = true
 
   setTimeout(() => {
-    loading.value = false
     disabled.value = false
+    loading.value = false
   }, 2000)
 }
 
