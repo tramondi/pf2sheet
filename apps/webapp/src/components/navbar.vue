@@ -1,15 +1,15 @@
 <template>
   <nav>
-    <VToolbar app>
-      <VToolbarTitle class="text-uppercase">
+    <v-toolbar app>
+      <v-toolbar-title class="text-uppercase">
         <span>pf2</span>
         <span class="font-weight-light">sheet</span>
-      </VToolbarTitle>
-      <VBtn color="gray">
+      </v-toolbar-title>
+      <v-btn color="gray">
         <span>выход</span>
-        <VIcon right :icon="mdiLogout"></VIcon>
-      </VBtn>
-    </VToolbar>
+        <v-icon right :icon="mdiLogout"></v-icon>
+      </v-btn>
+    </v-toolbar>
   </nav>
 </template>
 

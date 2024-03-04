@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import GeneralInfo from './blocks/GeneralInfo.vue'
+import GeneralInfo from './blocks/general-info.vue'
 
 const props = defineProps<{ hp_per_lvl: number }>()
 

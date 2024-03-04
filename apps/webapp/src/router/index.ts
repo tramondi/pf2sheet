@@ -5,24 +5,18 @@ import {
   Router,
 } from 'vue-router'
 
-import Landing from '../views/Landing.vue'
-import MySheets from '../views/MySheets.vue'
+import MySheets from '../views/my-sheets.vue'
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
-    name: 'landing',
-    component: Landing,
-  },
-  {
     path: '/sheet/:id',
     name: 'sheet',
-    component: () => import('../views/Sheet.vue'),
+    component: () => import('../views/sheet.vue'),
     props: true,
   },
   {
     path: '/my',
-    name: 'mysheets',
+    name: 'my-sheets',
     component: MySheets,
   },
 ]
@@ -37,5 +31,3 @@ export const createAppRouter = () => {
   
   return router
 }
-
-export default createAppRouter

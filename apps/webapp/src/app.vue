@@ -1,14 +1,14 @@
 <template>
-  <VApp>
-    <Navbar/>
-    <VContainer>
+  <v-app>
+    <navbar/>
+    <v-container>
       <main>
         <router-view></router-view>
       </main>
-    </VContainer>
-  </VApp>
+    </v-container>
+  </v-app>
 </template>
 
 <script setup lang="ts">
-import Navbar from './components/Navbar.vue';
+import Navbar from './components/navbar.vue';
 </script>
