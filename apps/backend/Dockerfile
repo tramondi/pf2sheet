@@ -1,13 +1,11 @@
 FROM golang:latest
 
-WORKDIR /app/
+WORKDIR /app
 
-COPY go.mod go.mod
-COPY go.sum go.sum
+COPY go.* .
 RUN go mod download
 
 COPY . .
-
 RUN go build -o app ./cmd/app
 
 EXPOSE 8080

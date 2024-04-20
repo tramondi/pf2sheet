@@ -1,11 +1,21 @@
 version: "3.8"
 services:
+  webui:
+    container_name: pf2sheet-webui
+    build:
+      context: ./apps/web-ui
+      dockerfile: Dockerfile
+    ports:
+      - 80:8080
+    depends_on:
+      - backend
   backend:
     container_name: pf2sheet-backend
     build:
-      dockerfile: ./apps/backend/Dockerfile
+      context: ./apps/backend
+      dockerfile: Dockerfile
     ports:
-      - 80:8080
+      - 8081:8080
     depends_on:
       - db
     networks:
@@ -18,7 +28,7 @@ services:
     volumes:
       - ./data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: "pf2sheet"
+      POSTGRES_DB: "postgres"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     networks:
