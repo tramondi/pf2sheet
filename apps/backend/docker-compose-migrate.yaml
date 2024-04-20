@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  dbmate:
+    container_name: pf2sheet-dbmate
+    image: ghcr.io/amacneil/dbmate
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/postgres?sslmode=disable&client_encoding=UTF8"
+      DBMATE_SCHEMA_FILE: "/schema-pg/schema.sql"
+      DBMATE_WAIT: "1"
+    volumes:
+      - ./internal/infra/sqlc-pg:/schema-pg
+      - ./migrations:/db/migrations:Z
+    depends_on:
+      - db
+    networks:
+      - db_network
+  db:
+    container_name: pf2sheet-db
+    image: postgres:15
+    ports:
+      - 5432:5432
+    volumes:
+      - ./../../data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    networks:
+      - db_network
+networks:
+  db_network:
+    driver: bridge
