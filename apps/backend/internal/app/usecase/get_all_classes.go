@@ -8,23 +8,23 @@ import (
 	"github.com/alionapermes/pf2sheet/internal/domain/entity"
 )
 
-type GetAllAncestriesUsecase struct {
+type GetAllClassesUsecase struct {
 	logger        *slog.Logger
 	knowledgeRepo contract.KnowledgeRepo
 }
 
-func NewGetAllAncestriesUsecase(
+func NewGetAllClassesUsecase(
 	logger *slog.Logger,
 	knowledgeRepo contract.KnowledgeRepo,
-) GetAllAncestriesUsecase {
-	return GetAllAncestriesUsecase{
+) GetAllClassesUsecase {
+	return GetAllClassesUsecase{
 		logger:        logger,
 		knowledgeRepo: knowledgeRepo,
 	}
 }
 
-func (self *GetAllAncestriesUsecase) Execute(
+func (self *GetAllClassesUsecase) Execute(
 	ctx context.Context,
-) ([]entity.Ancestry, error) {
-	return self.knowledgeRepo.GetAllAncestries(ctx)
+) ([]entity.Class, error) {
+	return self.knowledgeRepo.GetAllClasses(ctx)
 }

@@ -2,18 +2,21 @@ package pg
 
 import (
 	"context"
-	"strings"
+	"log/slog"
 
 	"github.com/alionapermes/pf2sheet/internal/domain/entity"
 	"github.com/alionapermes/pf2sheet/internal/infra/sqlc-pg/dao"
 )
 
 type KnowledgeRepo struct {
-	logger  interface{}
+	logger  *slog.Logger
 	querier dao.Querier
 }
 
-func NewKnowledgeRepo(logger interface{}, querier dao.Querier) *KnowledgeRepo {
+func NewKnowledgeRepo(
+	logger *slog.Logger,
+	querier dao.Querier,
+) *KnowledgeRepo {
 	return &KnowledgeRepo{
 		logger:  logger,
 		querier: querier,
@@ -25,15 +28,15 @@ func (self *KnowledgeRepo) GetAllAncestries(
 ) ([]entity.Ancestry, error) {
 	rows, err := self.querier.GetAllAncestries(ctx)
 	if err != nil {
-		return nil, wrapQueryError(err, "ancestries not found")
+		return nil, wrapQueryError(err, "failed to get ancestries")
 	}
 
 	ancestries := make([]entity.Ancestry, 0, len(rows))
 	for _, row := range rows {
 		ancestry := entity.Ancestry{
 			ID:    entity.AncestryID(row.Ancestry.ID),
-			Code:  strings.TrimSpace(row.Ancestry.Code),
-			Title: strings.TrimSpace(row.Ancestry.Title),
+			Code:  row.Ancestry.Code,
+			Title: row.Ancestry.Title,
 		}
 
 		ancestries = append(ancestries, ancestry)
@@ -47,7 +50,7 @@ func (self *KnowledgeRepo) GetAllClasses(
 ) ([]entity.Class, error) {
 	rows, err := self.querier.GetAllClasses(ctx)
 	if err != nil {
-		return nil, wrapQueryError(err, "classes not found")
+		return nil, wrapQueryError(err, "failed to get classes")
 	}
 
 	classes := make([]entity.Class, 0, len(rows))

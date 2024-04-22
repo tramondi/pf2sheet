@@ -12,7 +12,7 @@ import (
 const getPlayerSheets = `-- name: GetPlayerSheets :many
 SELECT
   sheets.id, sheets.player_id, sheets.ancestry_id, sheets.class_id, sheets.background, sheets.fullname, sheets.level, sheets.hp_current, sheets.hp_max,
-  players.id, players.name, players.pass_hash,
+  players.id, players.display_name, players.pass_hash, players.login,
   ancestries.id, ancestries.code, ancestries.title,
   classes.id, classes.code, classes.title
 FROM "sheets"
@@ -52,8 +52,9 @@ func (q *Queries) GetPlayerSheets(ctx context.Context, id int32) ([]*GetPlayerSh
 			&i.Sheet.HpCurrent,
 			&i.Sheet.HpMax,
 			&i.Player.ID,
-			&i.Player.Name,
+			&i.Player.DisplayName,
 			&i.Player.PassHash,
+			&i.Player.Login,
 			&i.Ancestry.ID,
 			&i.Ancestry.Code,
 			&i.Ancestry.Title,

@@ -1,9 +1,13 @@
 package contract
 
-import "context"
+import (
+	"context"
+
+	"github.com/alionapermes/pf2sheet/internal/domain/entity"
+)
 
 type PlayersRepo interface {
-	GetPlayerByID(ctx context.Context, id int) (interface{}, error)
+	Add(ctx context.Context, player entity.Player) (entity.Player, error)
 
-	AddPlayer(ctx context.Context, player interface{}) (int, error)
+	FindByLogin(ctx context.Context, login string) (entity.Player, error)
 }

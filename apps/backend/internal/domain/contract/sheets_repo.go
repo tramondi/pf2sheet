@@ -7,16 +7,16 @@ import (
 )
 
 type SheetsRepo interface {
-	GetPlayerSheets(
+	GetByPlayerID(
 		ctx context.Context,
 		playerID entity.PlayerID,
 	) ([]entity.Sheet, error)
 
-	AddSheet(
+	Add(
 		ctx context.Context,
 		playerID entity.PlayerID,
 		sheet entity.Sheet,
 	) (entity.SheetID, error)
 
-	DeleteSheet(ctx context.Context, id entity.SheetID) error
+	DeleteByID(ctx context.Context, id entity.SheetID) error
 }

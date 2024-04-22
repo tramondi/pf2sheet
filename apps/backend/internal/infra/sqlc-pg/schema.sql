@@ -19,8 +19,8 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.ancestries (
     id integer NOT NULL,
-    code character(30) NOT NULL,
-    title character(30) NOT NULL
+    code character varying(30) NOT NULL,
+    title character varying(30) NOT NULL
 );
 
 
@@ -50,8 +50,8 @@ ALTER SEQUENCE public.ancestries_id_seq OWNED BY public.ancestries.id;
 
 CREATE TABLE public.classes (
     id integer NOT NULL,
-    code character(30) NOT NULL,
-    title character(30) NOT NULL
+    code character varying(30) NOT NULL,
+    title character varying(30) NOT NULL
 );
 
 
@@ -81,8 +81,9 @@ ALTER SEQUENCE public.classes_id_seq OWNED BY public.classes.id;
 
 CREATE TABLE public.players (
     id integer NOT NULL,
-    name character(30) NOT NULL,
-    pass_hash character(72) NOT NULL
+    display_name character varying(30) NOT NULL,
+    pass_hash character varying(72) NOT NULL,
+    login character varying(30) NOT NULL
 );
 
 
@@ -116,6 +117,16 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: sessions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sessions (
+    token character varying(72) NOT NULL,
+    player_id integer NOT NULL
+);
+
+
+--
 -- Name: sheets; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -124,8 +135,8 @@ CREATE TABLE public.sheets (
     player_id integer NOT NULL,
     ancestry_id integer,
     class_id integer,
-    background character(60),
-    fullname character(60),
+    background character varying(60),
+    fullname character varying(60),
     level smallint,
     hp_current smallint,
     hp_max smallint
@@ -213,6 +224,14 @@ ALTER TABLE ONLY public.classes
 
 
 --
+-- Name: players players_login_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.players
+    ADD CONSTRAINT players_login_key UNIQUE (login);
+
+
+--
 -- Name: players players_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -226,6 +245,14 @@ ALTER TABLE ONLY public.players
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_pkey PRIMARY KEY (token);
 
 
 --
@@ -248,6 +275,21 @@ CREATE INDEX idx_ancestries_code ON public.ancestries USING hash (code);
 --
 
 CREATE INDEX idx_classes_code ON public.classes USING hash (code);
+
+
+--
+-- Name: idx_players_login; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_players_login ON public.players USING hash (login);
+
+
+--
+-- Name: sessions sessions_player_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_player_id_fkey FOREIGN KEY (player_id) REFERENCES public.players(id) ON DELETE CASCADE;
 
 
 --
@@ -286,4 +328,8 @@ ALTER TABLE ONLY public.sheets
 INSERT INTO public.schema_migrations (version) VALUES
     ('20240419095950'),
     ('20240420140345'),
-    ('20240420142524');
+    ('20240420142524'),
+    ('20240422082335'),
+    ('20240422082938'),
+    ('20240422172356'),
+    ('20240422175222');

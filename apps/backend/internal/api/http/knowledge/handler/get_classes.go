@@ -10,29 +10,29 @@ import (
 	"github.com/alionapermes/pf2sheet/internal/app/resource"
 )
 
-func GetAncestries(container resource.Container) echo.HandlerFunc {
+func GetClasses(container resource.Container) echo.HandlerFunc {
 	type data struct {
-		Ancestries []dto.Ancestry `json:"ancestries"`
+		Classes []dto.Class `json:"classes"`
 	}
 
-	getAllAncestries := container.Usecases.GetAllAncestries
+	getAllClasses := container.Usecases.GetAllClasses
 
 	return func(ctx echo.Context) error {
-		ancestries, err := getAllAncestries.Execute(context.TODO())
+		classes, err := getAllClasses.Execute(context.Background())
 		if err != nil {
 			return ctx.String(http.StatusInternalServerError, "internal error")
 		}
 
-		DTOs := make([]dto.Ancestry, 0, len(ancestries))
-		for _, ancestry := range ancestries {
-			DTOs = append(DTOs, dto.Ancestry{
+		DTOs := make([]dto.Class, 0, len(classes))
+		for _, ancestry := range classes {
+			DTOs = append(DTOs, dto.Class{
 				Code:  ancestry.Code,
 				Title: ancestry.Title,
 			})
 		}
 
 		response := &dto.Response[data]{
-			Data: &data{Ancestries: DTOs},
+			Data: &data{Classes: DTOs},
 		}
 
 		return ctx.JSON(http.StatusOK, response)

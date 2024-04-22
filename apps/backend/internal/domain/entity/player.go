@@ -1,5 +1,7 @@
 package entity
 
+import "golang.org/x/crypto/bcrypt"
+
 type PlayerID int
 
 func (self PlayerID) Value() int {
@@ -7,9 +9,32 @@ func (self PlayerID) Value() int {
 }
 
 type Player struct {
-	ID       PlayerID
-	Name     string
-	PassHash string
+	ID          PlayerID
+	DisplayName *string
+	Login       string
+	PassHash    string
+}
 
-	Sheets []Sheet
+func NewPlayer(login, password string) (Player, error) {
+	passHashBytes, err := bcrypt.GenerateFromPassword(
+		[]byte(password),
+		bcrypt.DefaultCost,
+	)
+	if err != nil {
+		return Player{}, err
+	}
+
+	return Player{
+		Login:    login,
+		PassHash: string(passHashBytes),
+	}, nil
+}
+
+func (self *Player) ValidatePassword(otherPassword string) bool {
+	err := bcrypt.CompareHashAndPassword(
+		[]byte(self.PassHash),
+		[]byte(otherPassword),
+	)
+
+	return err == nil
 }

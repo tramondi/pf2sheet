@@ -4,16 +4,17 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echo_middleware "github.com/labstack/echo/v4/middleware"
+	"github.com/lmittmann/tint"
 
-	"github.com/alionapermes/pf2sheet/internal/adapter/pg"
 	"github.com/alionapermes/pf2sheet/internal/api/http/knowledge/handler"
+	"github.com/alionapermes/pf2sheet/internal/api/http/knowledge/middleware"
 	"github.com/alionapermes/pf2sheet/internal/app/resource"
-	"github.com/alionapermes/pf2sheet/internal/app/usecase"
 	"github.com/alionapermes/pf2sheet/internal/infra/sqlc-pg/dao"
 )
 
@@ -26,8 +27,8 @@ type Server struct {
 
 func (self *Server) Start() {
 	self.e = echo.New()
-	self.e.Use(middleware.Logger())
-	self.e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	self.e.Use(echo_middleware.Logger())
+	self.e.Use(echo_middleware.CORSWithConfig(echo_middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{
 			http.MethodGet,
@@ -40,6 +41,8 @@ func (self *Server) Start() {
 			echo.HeaderOrigin,
 		},
 	}))
+
+	self.logger = slog.New(tint.NewHandler(os.Stderr, nil))
 
 	self.initRoutes()
 
@@ -61,18 +64,21 @@ func (self *Server) initRoutes() {
 		panic(err)
 	}
 
-	knowledgeRepo := pg.NewKnowledgeRepo(nil, dao.New(db))
-
-	usecases := resource.Usecases{
-		GetAllAncestries: usecase.NewGetAllAncestriesUsecase(nil, knowledgeRepo),
+	container, err := resource.InitContainer(self.logger, dao.New(db))
+	if err != nil {
+		panic(err)
 	}
 
 	self.e.GET("/ping", func(c echo.Context) error {
 		return c.String(http.StatusOK, "pong")
 	})
 
-	groupAPI := self.e.Group("/api")
+	self.e.POST("/signin", handler.Signin(container))
+	self.e.POST("/signup", handler.Signup(container))
+
+	groupAPI := self.e.Group("/api", middleware.Authentication(container))
 
 	groupKnowledge := groupAPI.Group("/knowledge")
-	groupKnowledge.GET("/ancestries", handler.GetAncestries(&usecases))
+	groupKnowledge.GET("/ancestries", handler.GetAncestries(container))
+	groupKnowledge.GET("/classes", handler.GetClasses(container))
 }

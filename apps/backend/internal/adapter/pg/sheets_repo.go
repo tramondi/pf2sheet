@@ -2,24 +2,26 @@ package pg
 
 import (
 	"context"
+	"errors"
+	"log/slog"
 
 	"github.com/alionapermes/pf2sheet/internal/domain/entity"
 	"github.com/alionapermes/pf2sheet/internal/infra/sqlc-pg/dao"
 )
 
 type SheetsRepo struct {
-	logger  interface{}
+	logger  *slog.Logger
 	querier dao.Querier
 }
 
-func NewSheetsRepo(logger interface{}, querier dao.Querier) *SheetsRepo {
+func NewSheetsRepo(logger *slog.Logger, querier dao.Querier) *SheetsRepo {
 	return &SheetsRepo{
 		logger:  logger,
 		querier: querier,
 	}
 }
 
-func (self *SheetsRepo) GetPlayerSheets(
+func (self *SheetsRepo) GetByPlayerID(
 	ctx context.Context,
 	playerID entity.PlayerID,
 ) ([]entity.Sheet, error) {
@@ -68,17 +70,17 @@ func (self *SheetsRepo) GetPlayerSheets(
 	return sheets, nil
 }
 
-func (self *SheetsRepo) AddSheet(
+func (self *SheetsRepo) Add(
 	ctx context.Context,
 	playerID entity.PlayerID,
 	sheet entity.Sheet,
 ) (entity.SheetID, error) {
-	return 0, nil
+	return 0, errors.New("not implemented yet")
 }
 
-func (self *SheetsRepo) DeleteSheet(
+func (self *SheetsRepo) DeleteByID(
 	ctx context.Context,
 	id entity.SheetID,
 ) error {
-	return nil
+	return errors.New("not implemented yet")
 }

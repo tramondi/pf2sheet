@@ -2,6 +2,10 @@ package entity
 
 type SheetID int
 
+func (self SheetID) Value() int {
+	return int(self)
+}
+
 type Sheet struct {
 	ID         SheetID
 	PlayerID   PlayerID
