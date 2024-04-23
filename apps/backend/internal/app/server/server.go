@@ -12,8 +12,6 @@ import (
 	echo_middleware "github.com/labstack/echo/v4/middleware"
 	"github.com/lmittmann/tint"
 
-	"github.com/alionapermes/pf2sheet/internal/api/http/knowledge/handler"
-	"github.com/alionapermes/pf2sheet/internal/api/http/knowledge/middleware"
 	"github.com/alionapermes/pf2sheet/internal/app/resource"
 	"github.com/alionapermes/pf2sheet/internal/infra/sqlc-pg/dao"
 )
@@ -44,12 +42,7 @@ func (self *Server) Start() {
 
 	self.logger = slog.New(tint.NewHandler(os.Stderr, nil))
 
-	self.initRoutes()
-
-	self.e.Start(":8080")
-}
-
-func (self *Server) initRoutes() {
+	// #####
 	const dsn = "postgres://postgres:postgres@db:5432/postgres?sslmode=disable&client_encoding=UTF8"
 
 	pgxConfig, err := pgxpool.ParseConfig(dsn)
@@ -68,17 +61,9 @@ func (self *Server) initRoutes() {
 	if err != nil {
 		panic(err)
 	}
+	// #####
 
-	self.e.GET("/ping", func(c echo.Context) error {
-		return c.String(http.StatusOK, "pong")
-	})
+	self.initRoutes(container)
 
-	self.e.POST("/signin", handler.Signin(container))
-	self.e.POST("/signup", handler.Signup(container))
-
-	groupAPI := self.e.Group("/api", middleware.Authentication(container))
-
-	groupKnowledge := groupAPI.Group("/knowledge")
-	groupKnowledge.GET("/ancestries", handler.GetAncestries(container))
-	groupKnowledge.GET("/classes", handler.GetClasses(container))
+	self.e.Start(":8080")
 }

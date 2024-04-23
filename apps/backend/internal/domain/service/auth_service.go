@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	"github.com/google/uuid"
@@ -57,4 +58,43 @@ func (self *AuthService) CreateSession(
 	}
 
 	return session, nil
+}
+
+func (self *AuthService) GetSessionByPlayerID(
+	ctx context.Context,
+	playerID entity.PlayerID,
+) (entity.Session, error) {
+	session, err := self.sessionsRepo.FindByPlayerID(ctx, playerID)
+	if err != nil {
+		return entity.Session{}, err
+	}
+
+	return session, nil
+}
+
+func (self *AuthService) GetOrCreateSession(
+	ctx context.Context,
+	playerID entity.PlayerID,
+) (entity.Session, error) {
+	session, err := self.GetSessionByPlayerID(ctx, playerID)
+	if err == nil {
+		return session, nil
+	}
+
+	if errors.Is(err, contract.ErrNotFound) {
+		session, err = self.CreateSession(ctx, playerID)
+		if err != nil {
+			return entity.Session{}, err
+		}
+
+		return session, nil
+	}
+
+	self.logger.Error(
+		"failed to get session by player id",
+		slog.Int("player_id", playerID.Value()),
+		slog.String("error", err.Error()),
+	)
+
+	return entity.Session{}, err
 }

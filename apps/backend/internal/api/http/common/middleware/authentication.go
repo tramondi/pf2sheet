@@ -20,13 +20,16 @@ func Authentication(container resource.Container) echo.MiddlewareFunc {
 			}
 
 			token := cookie.Value
+			if token == "" {
+				return ctx.NoContent(http.StatusUnauthorized)
+			}
 
 			session, err := sessionsRepo.FindByToken(context.Background(), token)
 			if err != nil {
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
 
-			ctx.Set("playerID", session.PlayerID)
+			ctx.Set("player_id", session.PlayerID)
 
 			return next(ctx)
 		}

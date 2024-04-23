@@ -57,6 +57,24 @@ func (self *SessionsRepo) FindByToken(
 	return session, nil
 }
 
+func (self *SessionsRepo) FindByPlayerID(
+	ctx context.Context,
+	playerID entity.PlayerID,
+) (entity.Session, error) {
+	row, err := self.querier.FindSessionByPlayerID(ctx, int32(playerID))
+	if err != nil {
+		return entity.Session{},
+			wrapQueryError(err, "failed to find session with player id %d", playerID)
+	}
+
+	session := entity.Session{
+		PlayerID: entity.PlayerID(row.Session.PlayerID),
+		Token:    row.Session.Token,
+	}
+
+	return session, nil
+}
+
 func (self *SessionsRepo) DeleteByToken(
 	ctx context.Context,
 	token string,

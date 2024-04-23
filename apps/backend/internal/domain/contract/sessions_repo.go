@@ -11,5 +11,10 @@ type SessionsRepo interface {
 
 	FindByToken(ctx context.Context, token string) (entity.Session, error)
 
+	FindByPlayerID(
+		ctx context.Context,
+		playerID entity.PlayerID,
+	) (entity.Session, error)
+
 	DeleteByToken(ctx context.Context, token string) error
 }

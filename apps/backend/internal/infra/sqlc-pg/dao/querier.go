@@ -13,6 +13,7 @@ type Querier interface {
 	AddSession(ctx context.Context, arg AddSessionParams) error
 	DeleteSessionByToken(ctx context.Context, token string) error
 	FindPlayerByLogin(ctx context.Context, login string) (*FindPlayerByLoginRow, error)
+	FindSessionByPlayerID(ctx context.Context, playerID int32) (*FindSessionByPlayerIDRow, error)
 	FindSessionByToken(ctx context.Context, token string) (*FindSessionByTokenRow, error)
 	GetAllAncestries(ctx context.Context) ([]*GetAllAncestriesRow, error)
 	GetAllClasses(ctx context.Context) ([]*GetAllClassesRow, error)

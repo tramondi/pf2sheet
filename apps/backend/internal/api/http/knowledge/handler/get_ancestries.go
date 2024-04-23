@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	common_dto "github.com/alionapermes/pf2sheet/internal/api/http/common/dto"
 	"github.com/alionapermes/pf2sheet/internal/api/http/knowledge/dto"
 	"github.com/alionapermes/pf2sheet/internal/app/resource"
 )
@@ -31,7 +32,7 @@ func GetAncestries(container resource.Container) echo.HandlerFunc {
 			})
 		}
 
-		response := &dto.Response[data]{
+		response := &common_dto.Response[data]{
 			Data: &data{Ancestries: DTOs},
 		}
 
