@@ -19,13 +19,19 @@ type Class struct {
 }
 
 type Player struct {
-	ID       int32
-	Name     string
-	PassHash string
+	ID          int32
+	DisplayName string
+	PassHash    string
+	Login       string
 }
 
 type SchemaMigration struct {
 	Version string
+}
+
+type Session struct {
+	Token    string
+	PlayerID int32
 }
 
 type Sheet struct {

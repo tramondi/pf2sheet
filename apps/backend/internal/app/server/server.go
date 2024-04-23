@@ -4,16 +4,15 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echo_middleware "github.com/labstack/echo/v4/middleware"
+	"github.com/lmittmann/tint"
 
-	"github.com/alionapermes/pf2sheet/internal/adapter/pg"
-	"github.com/alionapermes/pf2sheet/internal/api/http/knowledge/handler"
 	"github.com/alionapermes/pf2sheet/internal/app/resource"
-	"github.com/alionapermes/pf2sheet/internal/app/usecase"
 	"github.com/alionapermes/pf2sheet/internal/infra/sqlc-pg/dao"
 )
 
@@ -26,8 +25,8 @@ type Server struct {
 
 func (self *Server) Start() {
 	self.e = echo.New()
-	self.e.Use(middleware.Logger())
-	self.e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	self.e.Use(echo_middleware.Logger())
+	self.e.Use(echo_middleware.CORSWithConfig(echo_middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{
 			http.MethodGet,
@@ -41,12 +40,9 @@ func (self *Server) Start() {
 		},
 	}))
 
-	self.initRoutes()
+	self.logger = slog.New(tint.NewHandler(os.Stderr, nil))
 
-	self.e.Start(":8080")
-}
-
-func (self *Server) initRoutes() {
+	// #####
 	const dsn = "postgres://postgres:postgres@db:5432/postgres?sslmode=disable&client_encoding=UTF8"
 
 	pgxConfig, err := pgxpool.ParseConfig(dsn)
@@ -61,18 +57,13 @@ func (self *Server) initRoutes() {
 		panic(err)
 	}
 
-	knowledgeRepo := pg.NewKnowledgeRepo(nil, dao.New(db))
-
-	usecases := resource.Usecases{
-		GetAllAncestries: usecase.NewGetAllAncestriesUsecase(nil, knowledgeRepo),
+	container, err := resource.InitContainer(self.logger, dao.New(db))
+	if err != nil {
+		panic(err)
 	}
+	// #####
 
-	self.e.GET("/ping", func(c echo.Context) error {
-		return c.String(http.StatusOK, "pong")
-	})
+	self.initRoutes(container)
 
-	groupAPI := self.e.Group("/api")
-
-	groupKnowledge := groupAPI.Group("/knowledge")
-	groupKnowledge.GET("/ancestries", handler.GetAncestries(&usecases))
+	self.e.Start(":8080")
 }

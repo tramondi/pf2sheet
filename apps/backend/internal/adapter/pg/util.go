@@ -4,8 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/alionapermes/pf2sheet/internal/domain/contract"
 	"github.com/jackc/pgx/v5"
+
+	"github.com/alionapermes/pf2sheet/internal/domain/contract"
 )
 
 func wrapQueryError(err error, msgFormat string, args ...any) error {

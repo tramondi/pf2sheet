@@ -27,7 +27,7 @@ get_cmd = $(word 2,$(subst -, ,$1))
 
 MIGRATION = #
 
-migrate-%:
+dbmate-%:
 	$(eval MIGRATE_CMD = $(call get_cmd,$@))
 	docker-compose -f ./apps/backend/docker-compose-migrate.yaml \
 		run dbmate ${MIGRATE_CMD} ${MIGRATION}
