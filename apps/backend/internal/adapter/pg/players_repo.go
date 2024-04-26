@@ -4,82 +4,64 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/AlekSi/pointer"
+	"github.com/doug-martin/goqu/v9"
 
 	"github.com/alionapermes/pf2sheet/internal/domain/entity"
-	"github.com/alionapermes/pf2sheet/internal/infra/sqlc-pg/dao"
+	add_player "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/add-player"
+	get_player_by_login "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/get-player-by-login"
 )
 
 type PlayersRepo struct {
-	logger  *slog.Logger
-	querier dao.Querier
+	logger *slog.Logger
+	db     *goqu.Database
 }
 
 func NewPlayersRepo(
 	logger *slog.Logger,
-	querier dao.Querier,
+	db *goqu.Database,
 ) *PlayersRepo {
 	return &PlayersRepo{
-		logger:  logger,
-		querier: querier,
+		logger: logger,
+		db:     db,
 	}
 }
 
 func (self *PlayersRepo) Add(
 	ctx context.Context,
 	player entity.Player,
-) (entity.Player, error) {
-	var displayName string
-	if player.DisplayName != nil {
-		displayName = *player.DisplayName
+) (entity.PlayerID, error) {
+	input := add_player.Input{
+		Player: add_player.Player{
+			DisplayName: player.DisplayName,
+			Login:       player.Login,
+			PassHash:    player.PassHash,
+		},
 	}
 
-	params := dao.AddPlayerParams{
-		DisplayName: displayName,
-		PassHash:    player.PassHash,
-		Login:       player.Login,
-	}
-
-	if err := self.querier.AddPlayer(ctx, params); err != nil {
-		return entity.Player{}, nil
-	}
-
-	// @todo sqlc хуйня ебаная
-	row, err := self.querier.FindPlayerByLogin(ctx, player.Login)
+	output, err := add_player.DB(self.db).Query(ctx, input)
 	if err != nil {
-		return entity.Player{}, nil
+		return 0, wrapQueryError(err, "failed to add player")
 	}
 
-	playerOut := entity.Player{
-		ID:          entity.PlayerID(row.Player.ID),
-		DisplayName: pointer.ToStringOrNil(row.Player.DisplayName),
-		PassHash:    row.Player.PassHash,
-		Login:       row.Player.Login,
-	}
-
-	return playerOut, nil
+	return entity.PlayerID(output.PlayerID), nil
 }
 
-func (self *PlayersRepo) FindByLogin(
+func (self *PlayersRepo) GetByLogin(
 	ctx context.Context,
 	login string,
 ) (entity.Player, error) {
-	row, err := self.querier.FindPlayerByLogin(ctx, login)
+	input := get_player_by_login.Input{Login: login}
+
+	output, err := get_player_by_login.DB(self.db).Query(ctx, input)
 	if err != nil {
 		return entity.Player{},
-			wrapQueryError(err, "failed to find player with login %s", login)
-	}
-
-	var displayName *string
-	if name := row.Player.DisplayName; name != "" {
-		displayName = &name
+			wrapQueryError(err, "failed to get player with login %s", login)
 	}
 
 	player := entity.Player{
-		ID:          entity.PlayerID(row.Player.ID),
-		Login:       row.Player.Login,
-		PassHash:    row.Player.PassHash,
-		DisplayName: displayName,
+		ID:       entity.PlayerID(output.ID),
+		Login:    output.Login,
+		PassHash: output.PassHash,
 	}
 
 	return player, nil

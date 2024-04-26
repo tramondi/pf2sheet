@@ -24,7 +24,7 @@ func Authentication(container resource.Container) echo.MiddlewareFunc {
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
 
-			session, err := sessionsRepo.FindByToken(context.Background(), token)
+			session, err := sessionsRepo.GetByToken(context.Background(), token)
 			if err != nil {
 				return ctx.NoContent(http.StatusUnauthorized)
 			}

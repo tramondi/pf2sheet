@@ -27,12 +27,12 @@ func GetAncestries(container resource.Container) echo.HandlerFunc {
 		DTOs := make([]dto.Ancestry, 0, len(ancestries))
 		for _, ancestry := range ancestries {
 			DTOs = append(DTOs, dto.Ancestry{
-				Code:  ancestry.Code,
+				ID:    int64(ancestry.ID),
 				Title: ancestry.Title,
 			})
 		}
 
-		response := &common_dto.Response[data]{
+		response := &common_dto.Response{
 			Data: &data{Ancestries: DTOs},
 		}
 

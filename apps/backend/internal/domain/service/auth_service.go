@@ -34,7 +34,7 @@ func (self *AuthService) Auth(
 	login string,
 	password string,
 ) (entity.Player, error) {
-	player, err := self.playersRepo.FindByLogin(ctx, login)
+	player, err := self.playersRepo.GetByLogin(ctx, login)
 	if err != nil {
 		return entity.Player{}, err
 	}
@@ -64,7 +64,7 @@ func (self *AuthService) GetSessionByPlayerID(
 	ctx context.Context,
 	playerID entity.PlayerID,
 ) (entity.Session, error) {
-	session, err := self.sessionsRepo.FindByPlayerID(ctx, playerID)
+	session, err := self.sessionsRepo.GetByPlayerID(ctx, playerID)
 	if err != nil {
 		return entity.Session{}, err
 	}

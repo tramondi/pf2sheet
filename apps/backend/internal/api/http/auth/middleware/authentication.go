@@ -22,7 +22,7 @@ func Authentication(container resource.Container) echo.MiddlewareFunc {
 				return next(ctx)
 			}
 
-			_, err = sessionsRepo.FindByToken(context.Background(), cookie.Value)
+			_, err = sessionsRepo.GetByToken(context.Background(), cookie.Value)
 			if errors.Is(err, contract.ErrNotFound) {
 				return next(ctx)
 			}

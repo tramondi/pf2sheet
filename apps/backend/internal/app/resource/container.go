@@ -3,7 +3,7 @@ package resource
 import (
 	"log/slog"
 
-	"github.com/alionapermes/pf2sheet/internal/infra/sqlc-pg/dao"
+	"github.com/doug-martin/goqu/v9"
 )
 
 type Container struct {
@@ -14,9 +14,9 @@ type Container struct {
 
 func InitContainer(
 	logger *slog.Logger,
-	querier dao.Querier,
+	goquDB *goqu.Database,
 ) (Container, error) {
-	repos := initRepositories(logger, querier)
+	repos := initRepositories(logger, goquDB)
 	services := initServices(logger, repos)
 	usecases := initUsecases(logger, repos, services)
 
