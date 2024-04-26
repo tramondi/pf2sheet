@@ -1,6 +1,6 @@
 package dto
 
-type Response[T any] struct {
+type Response struct {
 	Error *string `json:"error,omitempty"`
-	Data  *T      `json:"data,omitempty"`
+	Data  any     `json:"data,omitempty"`
 }

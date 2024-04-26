@@ -7,7 +7,7 @@ import (
 )
 
 type PlayersRepo interface {
-	Add(ctx context.Context, player entity.Player) (entity.Player, error)
+	Add(ctx context.Context, player entity.Player) (entity.PlayerID, error)
 
-	FindByLogin(ctx context.Context, login string) (entity.Player, error)
+	GetByLogin(ctx context.Context, login string) (entity.Player, error)
 }

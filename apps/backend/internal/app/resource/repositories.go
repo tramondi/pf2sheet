@@ -3,9 +3,10 @@ package resource
 import (
 	"log/slog"
 
+	"github.com/doug-martin/goqu/v9"
+
 	"github.com/alionapermes/pf2sheet/internal/adapter/pg"
 	"github.com/alionapermes/pf2sheet/internal/domain/contract"
-	"github.com/alionapermes/pf2sheet/internal/infra/sqlc-pg/dao"
 )
 
 type Repositories struct {
@@ -17,12 +18,12 @@ type Repositories struct {
 
 func initRepositories(
 	logger *slog.Logger,
-	querier dao.Querier,
+	goquDB *goqu.Database,
 ) Repositories {
-	knowledgeRepo := pg.NewKnowledgeRepo(logger, querier)
-	sessionsRepo := pg.NewSessionsRepo(logger, querier)
-	sheetsRepo := pg.NewSheetsRepo(logger, querier)
-	playersRepo := pg.NewPlayersRepo(logger, querier)
+	knowledgeRepo := pg.NewKnowledgeRepo(logger, goquDB)
+	sessionsRepo := pg.NewSessionsRepo(logger, goquDB)
+	sheetsRepo := pg.NewSheetsRepo(logger, goquDB)
+	playersRepo := pg.NewPlayersRepo(logger, goquDB)
 
 	return Repositories{
 		Knowledge: knowledgeRepo,

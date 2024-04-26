@@ -28,7 +28,7 @@ func (self *PlayersService) CreatePlayer(
 	login string,
 	password string,
 ) (entity.Player, error) {
-	_, err := self.playersRepo.FindByLogin(ctx, login)
+	_, err := self.playersRepo.GetByLogin(ctx, login)
 	if err == nil {
 		return entity.Player{}, contract.ErrAlreadyExists
 	}
@@ -38,10 +38,12 @@ func (self *PlayersService) CreatePlayer(
 		return entity.Player{}, err
 	}
 
-	player, err = self.playersRepo.Add(ctx, player)
+	playerID, err := self.playersRepo.Add(ctx, player)
 	if err != nil {
 		return entity.Player{}, err
 	}
+
+	player.ID = playerID
 
 	return player, nil
 }

@@ -1,19 +1,19 @@
 package server
 
 import (
-	"context"
+	"database/sql"
 	"log/slog"
 	"net/http"
 	"os"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/doug-martin/goqu/v9"
 	"github.com/labstack/echo/v4"
 	echo_middleware "github.com/labstack/echo/v4/middleware"
 	"github.com/lmittmann/tint"
 
+	_ "github.com/lib/pq"
+
 	"github.com/alionapermes/pf2sheet/internal/app/resource"
-	"github.com/alionapermes/pf2sheet/internal/infra/sqlc-pg/dao"
 )
 
 type Server struct {
@@ -45,19 +45,15 @@ func (self *Server) Start() {
 	// #####
 	const dsn = "postgres://postgres:postgres@db:5432/postgres?sslmode=disable&client_encoding=UTF8"
 
-	pgxConfig, err := pgxpool.ParseConfig(dsn)
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		panic(err)
 	}
 
-	pgxConfig.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+	dialect := goqu.Dialect("postgres")
+	goquDB := dialect.DB(db)
 
-	db, err := pgxpool.NewWithConfig(context.Background(), pgxConfig)
-	if err != nil {
-		panic(err)
-	}
-
-	container, err := resource.InitContainer(self.logger, dao.New(db))
+	container, err := resource.InitContainer(self.logger, goquDB)
 	if err != nil {
 		panic(err)
 	}

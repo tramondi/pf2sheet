@@ -25,14 +25,14 @@ func GetClasses(container resource.Container) echo.HandlerFunc {
 		}
 
 		DTOs := make([]dto.Class, 0, len(classes))
-		for _, ancestry := range classes {
+		for _, class := range classes {
 			DTOs = append(DTOs, dto.Class{
-				Code:  ancestry.Code,
-				Title: ancestry.Title,
+				ID:    int64(class.ID),
+				Title: class.Title,
 			})
 		}
 
-		response := &common_dto.Response[data]{
+		response := &common_dto.Response{
 			Data: &data{Classes: DTOs},
 		}
 

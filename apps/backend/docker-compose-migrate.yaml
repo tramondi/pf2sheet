@@ -8,8 +8,8 @@ services:
       DBMATE_SCHEMA_FILE: "/schema-pg/schema.sql"
       DBMATE_WAIT: "1"
     volumes:
-      - ./internal/infra/sqlc-pg:/schema-pg
-      - ./migrations:/db/migrations:Z
+      - ./internal/infra/postgres/schema:/schema-pg
+      - ./internal/infra/postgres/migrations:/db/migrations
     depends_on:
       - db
     networks:

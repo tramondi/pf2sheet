@@ -1,6 +1,6 @@
 package dto
 
 type Class struct {
-	Code  string `json:"code"`
+	ID    int64  `json:"id"`
 	Title string `json:"title"`
 }

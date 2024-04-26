@@ -33,7 +33,7 @@ func Signup(container resource.Container) echo.HandlerFunc {
 		if err != nil {
 			if errors.Is(err, contract.ErrAlreadyExists) {
 				msg := fmt.Sprintf("player with login %s already exists", creds.Login)
-				response := &common_dto.Response[any]{
+				response := &common_dto.Response{
 					Error: pointer.ToString(msg),
 				}
 
@@ -46,6 +46,7 @@ func Signup(container resource.Container) echo.HandlerFunc {
 		ctx.SetCookie(&http.Cookie{
 			Name:  "session_token",
 			Value: session.Token,
+			Path:  "/",
 		})
 
 		return ctx.NoContent(http.StatusOK)

@@ -7,10 +7,13 @@ import (
 )
 
 type Usecases struct {
-	GetAllAncestries usecase.GetAllAncestriesUsecase
-	GetAllClasses    usecase.GetAllClassesUsecase
-	Signin           usecase.SigninUsecase
-	Signup           usecase.SignupUsecase
+	CreateSheet      *usecase.CreateSheetUsecase
+	DeleteSheet      *usecase.DeleteSheetUsecase
+	GetAllAncestries *usecase.GetAllAncestriesUsecase
+	GetAllClasses    *usecase.GetAllClassesUsecase
+	GetAllSheets     *usecase.GetAllSheetsUsecase
+	Signin           *usecase.SigninUsecase
+	Signup           *usecase.SignupUsecase
 }
 
 func initUsecases(
@@ -18,29 +21,28 @@ func initUsecases(
 	repos Repositories,
 	services Services,
 ) Usecases {
+	createSheetUsecase := usecase.NewCreateSheetsUsecase(
+		logger, repos.Sheets, repos.Knowledge)
+	deleteSheetUsecase := usecase.NewDeleteSheetsUsecase(
+		logger, repos.Sheets)
 	getAllAncestriesUsecase := usecase.NewGetAllAncestriesUsecase(
-		logger,
-		repos.Knowledge,
-	)
+		logger, repos.Knowledge)
 	getAllClassesUsecase := usecase.NewGetAllClassesUsecase(
-		logger,
-		repos.Knowledge,
-	)
+		logger, repos.Knowledge)
+	getAllSheetsUsecase := usecase.NewGetAllSheetsUsecase(
+		logger, repos.Knowledge, repos.Sheets)
 	signinUsecase := usecase.NewSigninUsecase(
-		logger,
-		services.Auth,
-		repos.Sheets,
-	)
+		logger, services.Auth, repos.Sheets)
 	signupUsecase := usecase.NewSignupUsecase(
-		logger,
-		services.Auth,
-		services.Players,
-	)
+		logger, services.Auth, services.Players)
 
 	return Usecases{
-		GetAllAncestries: getAllAncestriesUsecase,
-		GetAllClasses:    getAllClassesUsecase,
-		Signin:           signinUsecase,
-		Signup:           signupUsecase,
+		CreateSheet:      &createSheetUsecase,
+		DeleteSheet:      &deleteSheetUsecase,
+		GetAllAncestries: &getAllAncestriesUsecase,
+		GetAllClasses:    &getAllClassesUsecase,
+		GetAllSheets:     &getAllSheetsUsecase,
+		Signin:           &signinUsecase,
+		Signup:           &signupUsecase,
 	}
 }

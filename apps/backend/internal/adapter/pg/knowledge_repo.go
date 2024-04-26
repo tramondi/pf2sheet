@@ -4,39 +4,43 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/doug-martin/goqu/v9"
+
 	"github.com/alionapermes/pf2sheet/internal/domain/entity"
-	"github.com/alionapermes/pf2sheet/internal/infra/sqlc-pg/dao"
+	get_all_ancestries "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/get-all-ancestries"
+	get_all_classes "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/get-all-classes"
 )
 
 type KnowledgeRepo struct {
-	logger  *slog.Logger
-	querier dao.Querier
+	logger *slog.Logger
+	db     *goqu.Database
 }
 
 func NewKnowledgeRepo(
 	logger *slog.Logger,
-	querier dao.Querier,
+	db *goqu.Database,
 ) *KnowledgeRepo {
 	return &KnowledgeRepo{
-		logger:  logger,
-		querier: querier,
+		logger: logger,
+		db:     db,
 	}
 }
 
 func (self *KnowledgeRepo) GetAllAncestries(
 	ctx context.Context,
 ) ([]entity.Ancestry, error) {
-	rows, err := self.querier.GetAllAncestries(ctx)
+	output, err := get_all_ancestries.DB(self.db).Query(ctx)
 	if err != nil {
 		return nil, wrapQueryError(err, "failed to get ancestries")
 	}
 
-	ancestries := make([]entity.Ancestry, 0, len(rows))
-	for _, row := range rows {
+	ancestries := make([]entity.Ancestry, 0, len(output.Items))
+
+	for _, item := range output.Items {
 		ancestry := entity.Ancestry{
-			ID:    entity.AncestryID(row.Ancestry.ID),
-			Code:  row.Ancestry.Code,
-			Title: row.Ancestry.Title,
+			ID:    entity.AncestryID(item.Ancestry.ID),
+			Code:  item.Ancestry.Code,
+			Title: item.Ancestry.Title,
 		}
 
 		ancestries = append(ancestries, ancestry)
@@ -48,17 +52,18 @@ func (self *KnowledgeRepo) GetAllAncestries(
 func (self *KnowledgeRepo) GetAllClasses(
 	ctx context.Context,
 ) ([]entity.Class, error) {
-	rows, err := self.querier.GetAllClasses(ctx)
+	output, err := get_all_classes.DB(self.db).Query(ctx)
 	if err != nil {
-		return nil, wrapQueryError(err, "failed to get classes")
+		return nil, wrapQueryError(err, "failed to get ancestries")
 	}
 
-	classes := make([]entity.Class, 0, len(rows))
-	for _, row := range rows {
+	classes := make([]entity.Class, 0, len(output.Items))
+
+	for _, item := range output.Items {
 		class := entity.Class{
-			ID:    entity.ClassID(row.Class.ID),
-			Code:  row.Class.Code,
-			Title: row.Class.Title,
+			ID:    entity.ClassID(item.Class.ID),
+			Code:  item.Class.Code,
+			Title: item.Class.Title,
 		}
 
 		classes = append(classes, class)
