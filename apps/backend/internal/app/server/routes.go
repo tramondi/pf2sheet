@@ -9,11 +9,14 @@ import (
 	auth_middleware "github.com/alionapermes/pf2sheet/internal/api/http/auth/middleware"
 	common_middleware "github.com/alionapermes/pf2sheet/internal/api/http/common/middleware"
 	knowledge_handler "github.com/alionapermes/pf2sheet/internal/api/http/knowledge/handler"
+	profile_handler "github.com/alionapermes/pf2sheet/internal/api/http/profile/handler"
 	sheets_handler "github.com/alionapermes/pf2sheet/internal/api/http/sheets/handler"
 	"github.com/alionapermes/pf2sheet/internal/app/resource"
 )
 
 func (self *Server) initRoutes(container resource.Container) {
+	commonAuthMiddleware := common_middleware.Authentication(container)
+
 	self.e.GET("/ping", func(c echo.Context) error {
 		return c.String(http.StatusOK, "pong")
 	})
@@ -24,7 +27,12 @@ func (self *Server) initRoutes(container resource.Container) {
 		groupAuth.POST("/signup", auth_handler.Signup(container))
 	}
 
-	groupAPI := self.e.Group("/api", common_middleware.Authentication(container))
+	groupProfile := self.e.Group("/profile", commonAuthMiddleware)
+	{
+		groupProfile.POST("/signout", profile_handler.Signout(container))
+	}
+
+	groupAPI := self.e.Group("/api", commonAuthMiddleware)
 	{
 		groupKnowledge := groupAPI.Group("/knowledge")
 		{

@@ -30,6 +30,7 @@ func Authentication(container resource.Container) echo.MiddlewareFunc {
 			}
 
 			ctx.Set("player_id", session.PlayerID)
+			ctx.Set("session_token", session.Token)
 
 			return next(ctx)
 		}

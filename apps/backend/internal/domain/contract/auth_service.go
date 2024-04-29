@@ -23,4 +23,9 @@ type AuthService interface {
 		ctx context.Context,
 		playerID entity.PlayerID,
 	) (entity.Session, error)
+
+	Unauth(
+		ctx context.Context,
+		session entity.Session,
+	) error
 }

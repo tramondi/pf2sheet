@@ -50,18 +50,5 @@ func (self *SigninUsecase) Execute(
 		return entity.Session{}, err
 	}
 
-	// sheets, err := self.sheetsRepo.GetByPlayerID(ctx, player.ID)
-	// if err != nil {
-	// 	if !errors.Is(err, contract.ErrNotFound) {
-	// 		self.logger.Error(
-	// 			"failed to get sheets by player id",
-	// 			slog.Int("player_id", player.ID.Value()),
-	// 			slog.String("error", err.Error()),
-	// 		)
-	// 	}
-	//
-	// 	return session, player, nil, nil
-	// }
-
 	return session, nil
 }

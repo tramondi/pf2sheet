@@ -2,13 +2,13 @@ package pg
 
 import (
 	"context"
-	"errors"
 	"log/slog"
 
 	"github.com/doug-martin/goqu/v9"
 
 	"github.com/alionapermes/pf2sheet/internal/domain/entity"
 	add_session "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/add-session"
+	delete_session_by_token "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/del-session-by-token"
 	get_session_by_player_id "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/get-session-by-player-id"
 	get_session_by_token "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/get-session-by-token"
 )
@@ -91,9 +91,11 @@ func (self *SessionsRepo) DeleteByToken(
 	ctx context.Context,
 	token string,
 ) error {
-	// if err := self.querier.DeleteSessionByToken(ctx, token); err != nil {
-	// 	return wrapQueryError(err, "failed to find session with token %s", token)
-	// }
+	input := delete_session_by_token.Input{Token: token}
 
-	return errors.New("not implemented yet")
+	if err := delete_session_by_token.DB(self.db).Query(ctx, input); err != nil {
+		return wrapQueryError(err, "failed to find session with token %s", token)
+	}
+
+	return nil
 }

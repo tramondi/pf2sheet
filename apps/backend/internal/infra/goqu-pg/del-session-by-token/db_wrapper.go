@@ -1,4 +1,4 @@
-package del_sheet
+package del_session_by_token
 
 import "github.com/doug-martin/goqu/v9"
 

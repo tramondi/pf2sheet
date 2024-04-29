@@ -32,12 +32,7 @@ func Signin(container resource.Container) echo.HandlerFunc {
 			return ctx.NoContent(http.StatusUnauthorized)
 		}
 
-		ctx.SetCookie(&http.Cookie{
-			Name:  "session_token",
-			Value: session.Token,
-			Path:  "/",
-		})
-
-		return ctx.NoContent(http.StatusOK)
+		return setSessionCookie(ctx, session).
+			NoContent(http.StatusOK)
 	}
 }

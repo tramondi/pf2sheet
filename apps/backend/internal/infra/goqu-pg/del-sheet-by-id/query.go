@@ -1,4 +1,4 @@
-package del_sheet
+package del_sheet_by_id
 
 import (
 	"context"
