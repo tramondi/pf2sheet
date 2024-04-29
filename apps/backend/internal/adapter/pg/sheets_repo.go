@@ -9,7 +9,7 @@ import (
 
 	"github.com/alionapermes/pf2sheet/internal/domain/entity"
 	add_sheet "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/add-sheet"
-	del_sheet "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/del-sheet"
+	del_sheet_by_id "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/del-sheet-by-id"
 	get_sheets_by_player_id "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/get-sheets-by-player-id"
 )
 
@@ -119,9 +119,9 @@ func (self *SheetsRepo) DeleteByID(
 	ctx context.Context,
 	id entity.SheetID,
 ) error {
-	input := del_sheet.Input{SheetID: int64(id.Value())}
+	input := del_sheet_by_id.Input{SheetID: int64(id.Value())}
 
-	if err := del_sheet.DB(self.db).Query(ctx, input); err != nil {
+	if err := del_sheet_by_id.DB(self.db).Query(ctx, input); err != nil {
 		return err
 	}
 

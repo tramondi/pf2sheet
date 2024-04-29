@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 
 	"github.com/google/uuid"
@@ -97,4 +98,25 @@ func (self *AuthService) GetOrCreateSession(
 	)
 
 	return entity.Session{}, err
+}
+
+func (self *AuthService) Unauth(
+	ctx context.Context,
+	session entity.Session,
+) error {
+	storedSession, err := self.sessionsRepo.GetByToken(ctx, session.Token)
+	if err != nil {
+		return err
+	}
+
+	if session != storedSession {
+		return fmt.Errorf(
+			"invalid session %+v; expected %+v", session, storedSession)
+	}
+
+	if err := self.sessionsRepo.DeleteByToken(ctx, session.Token); err != nil {
+		return err
+	}
+
+	return nil
 }
