@@ -8,7 +8,7 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/labstack/echo/v4"
-	echo_middleware "github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/lmittmann/tint"
 
 	_ "github.com/lib/pq"
@@ -25,8 +25,8 @@ type Server struct {
 
 func (self *Server) Start() {
 	self.e = echo.New()
-	self.e.Use(echo_middleware.Logger())
-	self.e.Use(echo_middleware.CORSWithConfig(echo_middleware.CORSConfig{
+	self.e.Use(middleware.Logger())
+	self.e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{
 			http.MethodGet,

@@ -29,7 +29,10 @@ func (self *Server) initRoutes(container resource.Container) {
 
 	groupProfile := self.e.Group("/profile", commonAuthMiddleware)
 	{
+		groupProfile.GET("/", profile_handler.GetProfile(container))
 		groupProfile.POST("/signout", profile_handler.Signout(container))
+		groupProfile.PUT("/", profile_handler.UpdateProfile(container))
+		groupProfile.DELETE("/", profile_handler.DeleteProfile(container))
 	}
 
 	groupAPI := self.e.Group("/api", commonAuthMiddleware)
