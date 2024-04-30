@@ -15,6 +15,10 @@ type Usecases struct {
 	Signin           *usecase.SigninUsecase
 	Signup           *usecase.SignupUsecase
 	Signout          *usecase.SignoutUsecase
+	UpdateSheet      *usecase.UpdateSheetUsecase
+	UpdatePlayer     *usecase.UpdatePlayerUsecase
+	DeletePlayer     *usecase.DeletePlayerUsecase
+	GetPlayer        *usecase.GetPlayerUsecase
 }
 
 func initUsecases(
@@ -37,6 +41,10 @@ func initUsecases(
 	signupUsecase := usecase.NewSignupUsecase(
 		logger, services.Auth, services.Players)
 	signoutUsecase := usecase.NewSignoutUsecase(logger, services.Auth)
+	updatePlayerUsecase := usecase.NewUpdatePlayerUsecase(logger, repos.Players)
+	deletePlayerUsecase := usecase.NewDeletePlayerUsecase(logger, repos.Players)
+	updateSheetUsecase := usecase.NewUpdateSheetUsecase(logger, repos.Sheets)
+	getPlayerUsecase := usecase.NewGetPlayerUsecase(logger, repos.Players)
 
 	return Usecases{
 		CreateSheet:      &createSheetUsecase,
@@ -47,5 +55,9 @@ func initUsecases(
 		Signin:           &signinUsecase,
 		Signup:           &signupUsecase,
 		Signout:          &signoutUsecase,
+		UpdatePlayer:     &updatePlayerUsecase,
+		DeletePlayer:     &deletePlayerUsecase,
+		UpdateSheet:      &updateSheetUsecase,
+		GetPlayer:        &getPlayerUsecase,
 	}
 }

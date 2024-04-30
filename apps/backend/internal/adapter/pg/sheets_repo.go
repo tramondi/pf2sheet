@@ -11,6 +11,7 @@ import (
 	add_sheet "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/add-sheet"
 	del_sheet_by_id "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/del-sheet-by-id"
 	get_sheets_by_player_id "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/get-sheets-by-player-id"
+	upd_sheet "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/upd-sheet"
 )
 
 type SheetsRepo struct {
@@ -123,6 +124,40 @@ func (self *SheetsRepo) DeleteByID(
 
 	if err := del_sheet_by_id.DB(self.db).Query(ctx, input); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (self *SheetsRepo) Update(
+	ctx context.Context,
+	sheet entity.Sheet,
+) error {
+	var ancestryID, classID *int64
+
+	if sheet.Ancestry != nil {
+		ancestryID = pointer.ToInt64(int64(sheet.Ancestry.ID))
+	}
+
+	if sheet.Class != nil {
+		classID = pointer.ToInt64(int64(sheet.Class.ID))
+	}
+
+	input := upd_sheet.Input{
+		SheetID: int64(sheet.ID),
+		Sheet: upd_sheet.Sheet{
+			AncestryID: ancestryID,
+			ClassID:    classID,
+			FullName:   sheet.FullName,
+			Background: sheet.Background,
+			Level:      sheet.Level,
+			HpCurrent:  sheet.HpCurrent,
+			HpMax:      sheet.HpMax,
+		},
+	}
+
+	if err := upd_sheet.DB(self.db).Query(ctx, input); err != nil {
+		return wrapQueryError(err, "failed to delete sheet with id %d", sheet.ID)
 	}
 
 	return nil
