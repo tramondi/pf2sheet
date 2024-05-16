@@ -20,6 +20,7 @@ func Signin(container resource.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var creds credentials
 		if err := ctx.Bind(&creds); err != nil {
+			ctx.Logger().Errorf("failed to bind creds: %s", err)
 			return ctx.NoContent(http.StatusBadRequest)
 		}
 

@@ -27,6 +27,7 @@ func (self *PlayersService) CreatePlayer(
 	ctx context.Context,
 	login string,
 	password string,
+	displayName *string,
 ) (entity.Player, error) {
 	_, err := self.playersRepo.GetByLogin(ctx, login)
 	if err == nil {
@@ -37,6 +38,8 @@ func (self *PlayersService) CreatePlayer(
 	if err != nil {
 		return entity.Player{}, err
 	}
+
+	player.DisplayName = displayName
 
 	playerID, err := self.playersRepo.Add(ctx, player)
 	if err != nil {

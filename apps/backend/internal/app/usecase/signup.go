@@ -30,8 +30,9 @@ func (self *SignupUsecase) Execute(
 	ctx context.Context,
 	login string,
 	pass string,
+	displayName *string,
 ) (entity.Session, error) {
-	player, err := self.playersService.CreatePlayer(ctx, login, pass)
+	player, err := self.playersService.CreatePlayer(ctx, login, pass, displayName)
 	if err != nil {
 		self.logger.Debug("failed to create player: %s", err)
 

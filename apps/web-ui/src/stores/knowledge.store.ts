@@ -12,6 +12,7 @@ type KnowledgeState = {
 const fetchAncestries = async () => {
   const response = await fetch('//localhost:8081/api/knowledge/ancestries', {
     method: 'GET',
+    credentials: 'include',
   })
 
   const body = await response.json()
@@ -26,6 +27,7 @@ const fetchAncestries = async () => {
 const fetchClasses = async () => {
   const response = await fetch('//localhost:8081/api/knowledge/classes', {
     method: 'GET',
+    credentials: 'include',
   })
 
   const body = await response.json()
@@ -33,7 +35,7 @@ const fetchClasses = async () => {
 
   return body.data.classes.map(item => ({
     id: item.id,
-    title: itme.title,
+    title: item.title,
   }))
 }
 

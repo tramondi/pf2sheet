@@ -21,4 +21,6 @@ type SheetsRepo interface {
 	DeleteByID(ctx context.Context, id entity.SheetID) error
 
 	Update(ctx context.Context, sheet entity.Sheet) error
+
+	GetByID(ctx context.Context, sheetID entity.SheetID) (entity.Sheet, error)
 }

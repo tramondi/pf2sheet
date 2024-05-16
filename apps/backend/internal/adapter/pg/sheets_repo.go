@@ -10,6 +10,7 @@ import (
 	"github.com/alionapermes/pf2sheet/internal/domain/entity"
 	add_sheet "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/add-sheet"
 	del_sheet_by_id "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/del-sheet-by-id"
+	get_sheet_by_id "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/get-sheet-by-id"
 	get_sheets_by_player_id "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/get-sheets-by-player-id"
 	upd_sheet "github.com/alionapermes/pf2sheet/internal/infra/goqu-pg/upd-sheet"
 )
@@ -161,4 +162,50 @@ func (self *SheetsRepo) Update(
 	}
 
 	return nil
+}
+
+func (self *SheetsRepo) GetByID(
+	ctx context.Context,
+	sheetID entity.SheetID,
+) (entity.Sheet, error) {
+	input := get_sheet_by_id.Input{SheetID: int64(sheetID)}
+
+	output, err := get_sheet_by_id.DB(self.db).Query(ctx, input)
+	if err != nil {
+		return entity.Sheet{},
+			wrapQueryError(err, "failed to get sheet by id %d", sheetID)
+	}
+
+	var ancestry *entity.Ancestry
+	var class *entity.Class
+
+	if output.Sheet.AncestryID != nil {
+		ancestry = &entity.Ancestry{
+			ID:    entity.AncestryID(*output.Ancestry.ID),
+			Code:  *output.Ancestry.Code,
+			Title: *output.Ancestry.Title,
+		}
+	}
+
+	if output.Sheet.ClassID != nil {
+		class = &entity.Class{
+			ID:    entity.ClassID(*output.Class.ID),
+			Code:  *output.Class.Code,
+			Title: *output.Class.Title,
+		}
+	}
+
+	sheet := entity.Sheet{
+		ID:         entity.SheetID(output.Sheet.ID),
+		PlayerID:   entity.PlayerID(output.Sheet.PlayerID),
+		Level:      output.Sheet.Level,
+		FullName:   output.Sheet.FullName,
+		Ancestry:   ancestry,
+		Class:      class,
+		Background: output.Sheet.Background,
+		HpCurrent:  output.Sheet.HpCurrent,
+		HpMax:      output.Sheet.HpMax,
+	}
+
+	return sheet, nil
 }

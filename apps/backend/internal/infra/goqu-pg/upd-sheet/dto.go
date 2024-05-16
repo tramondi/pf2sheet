@@ -1,11 +1,11 @@
 package upd_sheet
 
 type Sheet struct {
-	AncestryID *int64  `db:"ancestry_id" goqu:"omitnil"`
-	ClassID    *int64  `db:"class_id" goqu:"omitnil"`
-	FullName   *string `db:"fullname" goqu:"omitnil"`
-	Background *string `db:"background" goqu:"omitnil"`
-	Level      *int16  `db:"level" goqu:"omitnil"`
-	HpCurrent  *int16  `db:"hp_current" goqu:"omitnil"`
-	HpMax      *int16  `db:"hp_max" goqu:"omitnil"`
+	AncestryID *int64  `db:"ancestry_id"`
+	ClassID    *int64  `db:"class_id"`
+	FullName   *string `db:"fullname"`
+	Background *string `db:"background"`
+	Level      *int16  `db:"level"`
+	HpCurrent  *int16  `db:"hp_current"`
+	HpMax      *int16  `db:"hp_max"`
 }

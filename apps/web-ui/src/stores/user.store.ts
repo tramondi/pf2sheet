@@ -1,50 +1,43 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
-
-type AuthDTO = {
-  profile: {
-    name: string
-  }
-}
-
-type ResponseError = {
-  response: {
-    data: {
-      detail: string
-    }
-  }
-}
 
 type UserState = {
   profile: {
-    privateKey: string
-    name: string
+    displayName?: string
+    login: string
   } | null
-  returnUrl: string
+  loaded: boolean
 };
 
-export const useUserStore = defineStore<'moderator', UserState>({
-  id: 'moderator',
+export const useUserStore = defineStore<'user', UserState>({
+  id: 'user',
   state: () => ({
     profile: null,
-    returnUrl: '',
-    token: '',
+    loaded: false,
   }),
   actions: {
-    async auth(privateKey: string) {
-      try {
-        const result = await axios<AuthDTO>({
-          url: '/auth',
-          method: 'POST',
-          data: new URLSearchParams({
-            privateKey,
-          }),
-        });
-
-        return result.data
-      } catch (err) {
-        throw (err as ResponseError).response.data.detail
+    async load() {
+      if (this.loaded) {
+        return
       }
+
+      const response = await fetch('//localhost:8081/api/profile/', {
+        method: 'GET',
+        credentials: "include",
+      })
+
+      if (response.status != 200) {
+        return
+      }
+
+      const body = await response.json()
+      console.log(JSON.stringify(body))
+
+      this.profile = {
+        displayName: body.data.display_name,
+        login: body.data.login,
+      }
+
+      this.loaded = true
     },
   },
 })

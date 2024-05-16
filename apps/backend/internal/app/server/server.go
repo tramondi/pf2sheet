@@ -27,12 +27,15 @@ func (self *Server) Start() {
 	self.e = echo.New()
 	self.e.Use(middleware.Logger())
 	self.e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
+		AllowOrigins: []string{"http://localhost"},
 		AllowMethods: []string{
 			http.MethodGet,
 			http.MethodPost,
+			http.MethodPut,
+			http.MethodDelete,
 			http.MethodOptions,
 		},
+		AllowCredentials: true,
 		AllowHeaders: []string{
 			echo.HeaderAccept,
 			echo.HeaderContentType,
