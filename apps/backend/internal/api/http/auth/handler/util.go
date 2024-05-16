@@ -15,7 +15,9 @@ func setSessionCookie(ctx echo.Context, session entity.Session) echo.Context {
 		Name:     sessionCookieName,
 		Value:    session.Token,
 		Path:     "/",
+		Domain:   "localhost",
 		HttpOnly: true,
+		Secure:   false,
 	})
 
 	return ctx

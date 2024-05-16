@@ -1,13 +1,29 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { mdiPlus } from '@mdi/js'
 
-import { useDashboardStore, useKnowledgeStore } from '../../stores'
+import {
+  useDashboardStore,
+  useKnowledgeStore,
+  useUserStore,
+} from '../../stores'
 import SheetCard from '../../components/sheet-card.vue'
 
 const dashboardStore = useDashboardStore()
 const knowledgeStore = useKnowledgeStore()
+
+const userStore = useUserStore()
+userStore.load()
+
+const { profile } = storeToRefs(userStore)
+const playerTitle = computed(() => {
+  const playerLoginPart = `Player ${profile.value.login}`
+  const playerNamePart = profile.value.displayName == null
+    ? '' : `// ${profile.value.displayName}`
+
+  return `${playerLoginPart} ${playerNamePart}`
+})
 
 knowledgeStore.load()
 
@@ -40,6 +56,7 @@ const h = '150px'
 </script>
 
 <template>
+  <h1>{{ playerTitle }}</h1>
   <div>
     <v-row justify="space-between">
       <v-col cols="4" md="4">

@@ -27,14 +27,6 @@ func (self *Server) initRoutes(container resource.Container) {
 		groupAuth.POST("/signup", auth_handler.Signup(container))
 	}
 
-	groupProfile := self.e.Group("/profile", commonAuthMiddleware)
-	{
-		groupProfile.GET("/", profile_handler.GetProfile(container))
-		groupProfile.POST("/signout", profile_handler.Signout(container))
-		groupProfile.PUT("/", profile_handler.UpdateProfile(container))
-		groupProfile.DELETE("/", profile_handler.DeleteProfile(container))
-	}
-
 	groupAPI := self.e.Group("/api", commonAuthMiddleware)
 	{
 		groupKnowledge := groupAPI.Group("/knowledge")
@@ -42,6 +34,14 @@ func (self *Server) initRoutes(container resource.Container) {
 			groupKnowledge.GET(
 				"/ancestries", knowledge_handler.GetAncestries(container))
 			groupKnowledge.GET("/classes", knowledge_handler.GetClasses(container))
+		}
+
+		groupProfile := groupAPI.Group("/profile")
+		{
+			groupProfile.GET("/", profile_handler.GetProfile(container))
+			groupProfile.POST("/signout", profile_handler.Signout(container))
+			groupProfile.PUT("/", profile_handler.UpdateProfile(container))
+			groupProfile.DELETE("/", profile_handler.DeleteProfile(container))
 		}
 
 		groupSheets := groupAPI.Group("/sheets")

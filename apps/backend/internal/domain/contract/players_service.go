@@ -11,5 +11,6 @@ type PlayersService interface {
 		ctx context.Context,
 		login string,
 		password string,
+		displayName *string,
 	) (entity.Player, error)
 }

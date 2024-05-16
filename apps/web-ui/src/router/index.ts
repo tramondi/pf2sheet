@@ -3,8 +3,10 @@ import {
   createWebHashHistory,
 } from 'vue-router'
 
+import { useUserStore } from '../stores'
+
 export const createRouter = () => {
-  return _createRouter({
+  const router = _createRouter({
     // eslint-disable-next-line
     // @ts-ignore
     history: createWebHashHistory(),
@@ -26,4 +28,21 @@ export const createRouter = () => {
       },
     ],
   })
+
+  router.beforeEach(async (to) => {
+    console.log('to: ' + to.path)
+
+    const publicPages = ['/auth']
+    const authRequired = !publicPages.includes(to.path)
+
+    const userStore = useUserStore()
+    await userStore.load()
+
+    if (authRequired && userStore.profile == null) {
+      console.log('redierect to auth')
+      return '/auth'
+    }
+  })
+
+  return router
 }
