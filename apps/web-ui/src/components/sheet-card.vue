@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ListItem } from '../domain/types'
+import { storeToRefs } from 'pinia'
 
+import { ListItem } from '../domain/types'
 import { Sheet } from '../model'
+import { updateSheet, deleteSheet } from '../api'
+
+import {
+  useKnowledgeStore,
+  useDashboardStore,
+} from '../stores'
 
 const props = defineProps<{
   sheet?: Sheet
@@ -10,55 +17,82 @@ const props = defineProps<{
   minHeight: string
 }>()
 
+const knowledgeStore = useKnowledgeStore()
+const { ancestries, classes } = storeToRefs(knowledgeStore)
+
+const dashboardStore = useDashboardStore()
+
 const sheet = ref(props.sheet)
+
+knowledgeStore.load()
+  .then((_) => {
+    console.log(`store ancestries: ${JSON.stringify(ancestries.value)}`)
+    console.log(`store classes: ${JSON.stringify(classes.value)}`)
+  })
 
 const subtitle = computed(() => {
   const lvl = sheet.value.level
-  const ancestry = sheet.value.ancestry.title
-  const klass = sheet.value.class.title
   const bg = sheet.value.background
 
-  return `ур. ${lvl} ${ancestry} ${klass} (${bg})`
+  const ancestry = knowledgeStore.getAncestryById(sheet.value.ancestryId)
+  const klass = knowledgeStore.getClassById(sheet.value.classId)
+
+  return `ур. ${lvl} ${ancestry?.title} ${klass?.title} (${bg})`
 })
 
 const text = computed(() => {
-  const hpCurrent = sheet.value.hitPointsCurrent
-  const hpMax = sheet.value.hitPointsMax
+  const hpCurrent = sheet.value.hpCurrent
+  const hpMax = sheet.value.hpMax
 
   return `${hpCurrent} / ${hpMax} hp`
 })
 
 const dialogModel = ref(false)
+const updateRequestStatus = ref(true)
 const tmpSheet = ref<Sheet|undefined>()
-
-const itemsClass: ListItem[] = [
-  {value: 'fighter', title: 'Воин'},
-  {value: 'bard', title: 'Бард'},
-  // {value: 'cleric', title: 'Жрец'},
-  // {value: 'druid', title: 'Друид'},
-  // {value: 'wizard', title: 'Волшебник'},
-]
-const selectedClass = ref('')
 
 const openModal = () => {
   tmpSheet.value = {...sheet.value}
   console.log(`tmpsheet: ${JSON.stringify(tmpSheet)}`)
 
-  //selectedClass.value = itemsClass.find(k => k.value === tmpSheet.value.class.value)
-  selectedClass.value = tmpSheet.value.class.value
   dialogModel.value = !dialogModel.value
 }
 
 const closeModal = (saveChanges: boolean) => {
-console.log(`selected: ${JSON.stringify(selectedClass.value)}`)
   if (saveChanges && tmpSheet.value !== undefined) {
-    //props.sheet.level = tmpSheet.value.level
-    sheet.value = {...tmpSheet.value}
-    sheet.value.class = itemsClass.find(k => k.value === selectedClass.value)
-    console.log(`sheeted: ${JSON.stringify(sheet.value.class)}`)
-  }
+    if (tmpSheet.value.hpCurrent !== undefined) {
+      tmpSheet.value.hpCurrent = parseInt(tmpSheet.value.hpCurrent!)
+    }
 
-  dialogModel.value = !dialogModel.value
+    if (tmpSheet.value.hpMax !== undefined) {
+      tmpSheet.value.hpMax = parseInt(tmpSheet.value.hpMax!)
+    }
+
+    updateSheet(tmpSheet.value)
+      .then(_ => {
+        updateRequestStatus.value = true
+        dialogModel.value = false
+
+        sheet.value = {...tmpSheet.value}
+        dashboardStore.reloadSheets()
+      })
+      .catch(err => {
+        console.log(`failed to update sheet: ${err}`)
+        updateRequestStatus.value = false
+      })
+  } else {
+    dialogModel.value = false
+  }
+}
+
+const btnDelete = (id: number) => {
+  deleteSheet(id)
+    .then(_ => {
+      dashboardStore.reloadSheets()
+    })
+    .catch(err => {
+      console.log(`create request failed: ${err.message}`)
+    })
 }
 </script>
 
@@ -71,29 +105,41 @@ console.log(`selected: ${JSON.stringify(selectedClass.value)}`)
     :min-height="props.minHeight"
   >
     <v-btn @click="openModal">Изменить</v-btn>
+    <v-btn @click="btnDelete(sheet.id)">Удалить</v-btn>
   </v-card>
   <div class="text-center pa-4">
     <v-dialog
       v-model="dialogModel"
       max-width="400"
-      persistent
     >
       <v-card
         prepend-icon="mdi-map-marker"
-        title="Редактирование листа персонажа"
+        title="Редактирование"
       >
         <v-text-field label="Имя" v-model="tmpSheet.charName"></v-text-field>
         <v-text-field label="Уровень" v-model="tmpSheet.level"></v-text-field>
-        <v-text-field label="Текущие ОЗ" v-model="tmpSheet.hitPointsCurrent"></v-text-field>
-        <v-text-field label="Максимум ОЗ" v-model="tmpSheet.hitPointsMax"></v-text-field>
+        <v-text-field label="Текущие ОЗ" v-model="tmpSheet.hpCurrent"></v-text-field>
+        <v-text-field label="Максимум ОЗ" v-model="tmpSheet.hpMax"></v-text-field>
         <v-text-field label="Предыстория" v-model="tmpSheet.background"></v-text-field>
-        <v-text-field label="Происхождение" v-model="tmpSheet.ancestry"></v-text-field>
+        <v-select
+          label="Происхождение"
+          v-model="tmpSheet.ancestryId"
+          item-value="id"
+          :items="ancestries"
+        ></v-select>
         <v-select
           label="Класс"
-          v-model="selectedClass"
-          :items="itemsClass"
+          v-model="tmpSheet.classId"
+          item-value="id"
+          :items="classes"
         ></v-select>
-        <!-- <v-text-field label="Класс" v-model="tmpSheet.class"></v-text-field> -->
+        <v-alert
+          v-if="updateRequestStatus === false"
+          color="error"
+          icon="$error"
+          title="Ошибка запроса"
+          text="Видимо в одном из полей содержится ошибка, либо что-то произошло с сервером"
+        ></v-alert>
         <template v-slot:actions>
           <v-spacer></v-spacer>
           <v-btn @click="closeModal(false)">Отмена</v-btn>

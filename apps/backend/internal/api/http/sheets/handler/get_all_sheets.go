@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/AlekSi/pointer"
 	"github.com/labstack/echo/v4"
 
 	common_dto "github.com/alionapermes/pf2sheet/internal/api/http/common/dto"
@@ -14,8 +15,8 @@ import (
 func GetAllSheets(container resource.Container) echo.HandlerFunc {
 	type dtoSheet struct {
 		ID         int     `json:"id"`
-		Ancestry   *string `json:"ancestry,omitempty"`
-		Class      *string `json:"class,omitempty"`
+		AncestryID *int64  `json:"ancestry_id,omitempty"`
+		ClassID    *int64  `json:"class_id,omitempty"`
 		Background *string `json:"background,omitempty"`
 		FullName   *string `json:"full_name,omitempty"`
 		Level      *int16  `json:"level,omitempty"`
@@ -42,21 +43,21 @@ func GetAllSheets(container resource.Container) echo.HandlerFunc {
 
 		sheetDTOs := make([]dtoSheet, 0, len(sheets))
 		for _, sheet := range sheets {
-			var ancestry *string
-			var class *string
+			var ancestryID *int64
+			var classID *int64
 
 			if value := sheet.Ancestry; value != nil {
-				ancestry = &value.Code
+				ancestryID = pointer.ToInt64(int64(value.ID))
 			}
 
 			if value := sheet.Class; value != nil {
-				class = &value.Code
+				classID = pointer.ToInt64(int64(value.ID))
 			}
 
 			sheetDTOs = append(sheetDTOs, dtoSheet{
 				ID:         sheet.ID.Value(),
-				Ancestry:   ancestry,
-				Class:      class,
+				AncestryID: ancestryID,
+				ClassID:    classID,
 				Background: sheet.Background,
 				FullName:   sheet.FullName,
 				Level:      sheet.Level,

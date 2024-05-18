@@ -27,6 +27,7 @@ func UpdateSheet(container resource.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		playerID, ok := ctx.Get("player_id").(entity.PlayerID)
 		if !ok {
+			ctx.Logger().Errorf("failed to get player id from context")
 			return ctx.NoContent(http.StatusInternalServerError)
 		}
 
@@ -68,6 +69,7 @@ func UpdateSheet(container resource.Container) echo.HandlerFunc {
 		}
 
 		if err := updateSheet.Execute(context.Background(), sheet); err != nil {
+      ctx.Logger().Errorf("failed to execute updateSheet usecase: %s", err.Error())
 			return ctx.NoContent(http.StatusInternalServerError)
 		}
 

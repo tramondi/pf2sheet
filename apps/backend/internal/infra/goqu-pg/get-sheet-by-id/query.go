@@ -31,7 +31,7 @@ func (self *db) Query(
 			goqu.T("classes"),
 			goqu.On(goqu.I("sheets.class_id").Eq(goqu.I("classes.id"))),
 		).
-		Where(goqu.I("sheets.player_id").Eq(input.SheetID))
+		Where(goqu.I("sheets.id").Eq(input.SheetID))
 
 	var output Output
 
