@@ -37,6 +37,7 @@ func CreateSheet(container resource.Container) echo.HandlerFunc {
 		var reqDTO sheetDTO
 
 		if err := ctx.Bind(&reqDTO); err != nil {
+			ctx.Logger().Errorf("failed to parse body: %s", err)
 			return ctx.NoContent(http.StatusBadRequest)
 		}
 

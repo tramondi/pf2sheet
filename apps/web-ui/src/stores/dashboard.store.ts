@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
-// import axios from 'axios'
 
-import { Ancestry, Class, Sheet } from '../model'
+import { Sheet } from '../model'
 
 const storeName = 'dashboard'
 
@@ -9,161 +8,42 @@ type DashboardState = {
   sheets: Sheet[]
 }
 
-const stubSheets: Sheet[] = [
-  {
-    charName: 'erza',
-    ancestry: {code: 'gnome', title: 'Гном'},
-    background: 'preacher',
-    class: {code: 'bard', title: 'Бард'},
-    level: 2,
-    hitPointsMax: 16,
-    hitPointsCurrent: 12,
-  },
-  {
-    charName: 'boober',
-    ancestry: {code: 'human', title: 'Человек'},
-    background: 'miner',
-    class: {code: 'fighter', title: 'Воин'},
-    level: 1,
-    hitPointsMax: 10,
-    hitPointsCurrent: 10,
-  },
-  // {
-  //   charName: 'erza',
-  //   ancestry: Ancestry.Gnome,
-  //   background: 'student',
-  //   class: Class.Bard,
-  //   level: 2,
-  //   hitPointsMax: 16,
-  //   hitPointsCurrent: 12,
-  // },
-  // {
-  //   charName: 'boober',
-  //   ancestry: Ancestry.Human,
-  //   background: 'miner',
-  //   class: Class.Fighter,
-  //   level: 1,
-  //   hitPointsMax: 10,
-  //   hitPointsCurrent: 10,
-  // },
-  // {
-  //   charName: 'erza',
-  //   ancestry: Ancestry.Gnome,
-  //   background: 'student',
-  //   class: Class.Bard,
-  //   level: 2,
-  //   hitPointsMax: 16,
-  //   hitPointsCurrent: 12,
-  // },
-  // {
-  //   charName: 'boober',
-  //   ancestry: Ancestry.Human,
-  //   background: 'miner',
-  //   class: Class.Fighter,
-  //   level: 1,
-  //   hitPointsMax: 10,
-  //   hitPointsCurrent: 10,
-  // },
-  // {
-  //   charName: 'erza',
-  //   ancestry: Ancestry.Gnome,
-  //   background: 'student',
-  //   class: Class.Bard,
-  //   level: 2,
-  //   hitPointsMax: 16,
-  //   hitPointsCurrent: 12,
-  // },
-  // {
-  //   charName: 'boober',
-  //   ancestry: Ancestry.Human,
-  //   background: 'miner',
-  //   class: Class.Fighter,
-  //   level: 1,
-  //   hitPointsMax: 10,
-  //   hitPointsCurrent: 10,
-  // },
-  // {
-  //   charName: 'erza',
-  //   ancestry: Ancestry.Gnome,
-  //   background: 'student',
-  //   class: Class.Bard,
-  //   level: 2,
-  //   hitPointsMax: 16,
-  //   hitPointsCurrent: 12,
-  // },
-  // {
-  //   charName: 'boober',
-  //   ancestry: Ancestry.Human,
-  //   background: 'miner',
-  //   class: Class.Fighter,
-  //   level: 1,
-  //   hitPointsMax: 10,
-  //   hitPointsCurrent: 10,
-  // },
-  // {
-  //   charName: 'erza',
-  //   ancestry: Ancestry.Gnome,
-  //   background: 'student',
-  //   class: Class.Bard,
-  //   level: 2,
-  //   hitPointsMax: 16,
-  //   hitPointsCurrent: 12,
-  // },
-  // {
-  //   charName: 'boober',
-  //   ancestry: Ancestry.Human,
-  //   background: 'miner',
-  //   class: Class.Fighter,
-  //   level: 1,
-  //   hitPointsMax: 10,
-  //   hitPointsCurrent: 10,
-  // },
-  // {
-  //   charName: 'erza',
-  //   ancestry: Ancestry.Gnome,
-  //   background: 'student',
-  //   class: Class.Bard,
-  //   level: 2,
-  //   hitPointsMax: 16,
-  //   hitPointsCurrent: 12,
-  // },
-  // {
-  //   charName: 'boober',
-  //   ancestry: Ancestry.Human,
-  //   background: 'miner',
-  //   class: Class.Fighter,
-  //   level: 1,
-  //   hitPointsMax: 10,
-  //   hitPointsCurrent: 10,
-  // },
-  // {
-  //   charName: 'erza',
-  //   ancestry: Ancestry.Gnome,
-  //   background: 'student',
-  //   class: Class.Bard,
-  //   level: 2,
-  //   hitPointsMax: 16,
-  //   hitPointsCurrent: 12,
-  // },
-  // {
-  //   charName: 'boober',
-  //   ancestry: Ancestry.Human,
-  //   background: 'miner',
-  //   class: Class.Fighter,
-  //   level: 1,
-  //   hitPointsMax: 10,
-  //   hitPointsCurrent: 10,
-  // },
-]
+const fetchSheets = async () => {
+  const response = await fetch('//localhost:8081/api/sheets/', {
+    method: 'GET',
+    credentials: 'include',
+  })
+
+  const body = await response.json()
+  console.log(JSON.stringify(body))
+
+  return body.data.sheets.map(item => ({
+    id: item.id,
+    charName: item.full_name,
+    level: item.level,
+    hpCurrent: item.hp_current,
+    hpMax: item.hp_max,
+    background: item.background,
+    ancestryId: item.ancestry_id,
+    classId: item.class_id,
+  }))
+}
 
 export const useDashboardStore = defineStore(storeName, {
   state: () => ({
-    sheets: stubSheets,
+    sheets: [],
   }),
-  // actions: {
-  // },
+  actions: {
+    async load() {
+      this.sheets = await fetchSheets()
+    },
+
+    async reloadSheets() {
+      this.sheets = []
+      await this.load()
+    },
+  },
   getters: {
     getSheets: (state) => state.sheets,
-    getSheets2: (state) => [state.sheets[0], state.sheets[1]],
   },
 })

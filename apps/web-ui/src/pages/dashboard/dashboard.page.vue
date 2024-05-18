@@ -9,9 +9,11 @@ import {
   useUserStore,
 } from '../../stores'
 import SheetCard from '../../components/sheet-card.vue'
+import { createSheet } from '../../api'
+
+const knowledgeStore = useKnowledgeStore()
 
 const dashboardStore = useDashboardStore()
-const knowledgeStore = useKnowledgeStore()
 
 const userStore = useUserStore()
 userStore.load()
@@ -26,15 +28,18 @@ const playerTitle = computed(() => {
 })
 
 knowledgeStore.load()
+  .then((_) => {
+    console.log(`store ancestries: ${JSON.stringify(ancestries.value)}`)
+    console.log(`store classes: ${JSON.stringify(classes.value)}`)
+
+    dashboardStore.load()
+  })
 
 const { ancestries, classes } = storeToRefs(knowledgeStore)
-console.log(`store ancestries: ${JSON.stringify(ancestries.value)}`)
-console.log(`store classes: ${JSON.stringify(classes.value)}`)
-
-const selectedClass = ref('')
-const selectedAncestry = ref('')
+const { sheets } = storeToRefs(dashboardStore)
 
 const dialogModel = ref(false)
+const createRequestStatus = ref(true)
 const tmpSheet = ref<Sheet>({level: 1})
 
 const newSheet = () => {
@@ -44,8 +49,26 @@ const newSheet = () => {
 }
 
 const closeModal = (saveSheet: boolean) => {
-  if (saveSheet) {
+  if (saveSheet && tmpSheet.value !== undefined) {
     console.log(`saving sheet: ${JSON.stringify(tmpSheet.value)}`)
+
+    if (tmpSheet.value.hpCurrent !== undefined) {
+      tmpSheet.value.hpCurrent = parseInt(tmpSheet.value.hpCurrent!)
+    }
+
+    if (tmpSheet.value.hpMax !== undefined) {
+      tmpSheet.value.hpMax = parseInt(tmpSheet.value.hpMax!)
+    }
+
+    createSheet(tmpSheet.value)
+      .then(sheet => {
+        dashboardStore.reloadSheets()
+        createRequestStatus.value = true
+      })
+      .catch(err => {
+        console.log(`create request failed: ${err.message}`)
+        createRequestStatus.value = false
+      })
   }
 
   dialogModel.value = false
@@ -56,7 +79,7 @@ const h = '150px'
 </script>
 
 <template>
-  <h1>{{ playerTitle }}</h1>
+  <h1 class="my-4">{{ playerTitle }}</h1>
   <div>
     <v-row justify="space-between">
       <v-col cols="4" md="4">
@@ -64,7 +87,7 @@ const h = '150px'
           <v-btn :icon="mdiPlus" size="x-large" @click="newSheet"></v-btn>
         </v-card>
       </v-col>
-      <v-col cols="4" md="4" v-for="sheet in dashboardStore.getSheets2">
+      <v-col cols="4" md="4" v-for="sheet in sheets">
         <SheetCard :sheet="sheet" :min-width="w" :min-height="h"/>
       </v-col>
     </v-row>
@@ -73,29 +96,47 @@ const h = '150px'
     <v-dialog
       v-model="dialogModel"
       max-width="400"
-      persistent
     >
       <v-card
         prepend-icon="mdi-map-marker"
         title="Создание листа персонажа"
       >
         <v-text-field label="Имя" v-model="tmpSheet.charName"></v-text-field>
-        <v-text-field label="Уровень" v-model="tmpSheet.level"></v-text-field>
-        <v-text-field label="Текущие ОЗ" v-model="tmpSheet.hitPointsCurrent"></v-text-field>
-        <v-text-field label="Максимум ОЗ" v-model="tmpSheet.hitPointsMax"></v-text-field>
+        <v-text-field
+          label="Уровень"
+          type="number"
+          v-model="tmpSheet.level"
+        ></v-text-field>
+        <v-text-field
+          label="Текущие ОЗ"
+          type="number"
+          v-model="tmpSheet.hpCurrent"
+        ></v-text-field>
+        <v-text-field
+          label="Максимум ОЗ"
+          type="number"
+          v-model="tmpSheet.hpMax"
+        ></v-text-field>
         <v-text-field label="Предыстория" v-model="tmpSheet.background"></v-text-field>
         <v-select
           label="Происхождение"
-          v-model="selectedAncestry"
-          item-value="code"
+          v-model="tmpSheet.ancestryId"
+          item-value="id"
           :items="ancestries"
         ></v-select>
         <v-select
           label="Класс"
-          v-model="selectedClass"
-          item-value="code"
+          v-model="tmpSheet.classId"
+          item-value="id"
           :items="classes"
         ></v-select>
+        <v-alert
+          v-if="createRequestStatus === false"
+          color="error"
+          icon="$error"
+          title="Ошибка запроса"
+          text="Видимо в одном из полей содержится ошибка, либо что-то произошло с сервером"
+        ></v-alert>
         <template v-slot:actions>
           <v-spacer></v-spacer>
           <v-btn @click="closeModal(false)">Отмена</v-btn>

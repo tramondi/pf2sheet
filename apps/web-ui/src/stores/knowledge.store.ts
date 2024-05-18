@@ -48,6 +48,14 @@ export const useKnowledgeStore = defineStore(storeName, {
     async load() {
       this.ancestries = await fetchAncestries()
       this.classes = await fetchClasses()
-    }
+    },
+
+    getAncestryById(id: number): Ancestry | undefined {
+      return this.ancestries.find(item => item.id == id)
+    },
+
+    getClassById(id: number): Class | undefined {
+      return this.classes.find(item => item.id == id)
+    },
   },
 })
