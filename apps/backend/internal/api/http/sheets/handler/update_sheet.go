@@ -69,7 +69,7 @@ func UpdateSheet(container resource.Container) echo.HandlerFunc {
 		}
 
 		if err := updateSheet.Execute(context.Background(), sheet); err != nil {
-      ctx.Logger().Errorf("failed to execute updateSheet usecase: %s", err.Error())
+			ctx.Logger().Errorf("failed to execute updateSheet usecase: %s", err.Error())
 			return ctx.NoContent(http.StatusInternalServerError)
 		}
 

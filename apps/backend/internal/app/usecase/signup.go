@@ -34,14 +34,20 @@ func (self *SignupUsecase) Execute(
 ) (entity.Session, error) {
 	player, err := self.playersService.CreatePlayer(ctx, login, pass, displayName)
 	if err != nil {
-		self.logger.Debug("failed to create player: %s", err)
+		self.logger.Debug(
+			"failed to create player",
+			slog.String("error", err.Error()),
+		)
 
 		return entity.Session{}, err
 	}
 
 	session, err := self.authService.CreateSession(ctx, player.ID)
 	if err != nil {
-		self.logger.Debug("failed to create session: %s", err)
+		self.logger.Debug(
+			"failed to create session",
+			slog.String("error", err.Error()),
+		)
 
 		return entity.Session{}, err
 	}

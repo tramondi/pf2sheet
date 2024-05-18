@@ -34,7 +34,10 @@ func (self *SignoutUsecase) Execute(
 	}
 
 	if err := self.authService.Unauth(ctx, session); err != nil {
-		self.logger.Debug("failed to create session: %s", err)
+		self.logger.Debug(
+			"failed to create session",
+			slog.String("error", err.Error()),
+		)
 
 		return err
 	}
