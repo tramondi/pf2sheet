@@ -44,7 +44,7 @@ const text = computed(() => {
   const hpCurrent = sheet.value.hpCurrent
   const hpMax = sheet.value.hpMax
 
-  return `${hpCurrent} / ${hpMax} hp`
+  return `${hpCurrent} / ${hpMax} хп`
 })
 
 const dialogModel = ref(false)
@@ -94,6 +94,26 @@ const btnDelete = (id: number) => {
       console.log(`create request failed: ${err.message}`)
     })
 }
+
+const btnExport = () => {
+  const json = JSON.stringify(sheet.value, null, '\t')
+  console.log(`sheet to export: ${json}`)
+
+  const blob = new Blob([json], {
+    type: 'application/json',
+  })
+  const blobUrl = URL.createObjectURL(blob)
+
+  let href = document.createElement('a')
+  href.href = blobUrl
+  href.download = `sheet_${sheet.value.id}`
+
+  href.click()
+}
+
+const clearSheet = () => {
+  sheet.value = {} as Sheet
+}
 </script>
 
 <template>
@@ -104,13 +124,14 @@ const btnDelete = (id: number) => {
     :min-width="props.minWidth"
     :min-height="props.minHeight"
   >
+    <v-btn @click="btnExport">Экспорт</v-btn>
     <v-btn @click="openModal">Изменить</v-btn>
     <v-btn @click="btnDelete(sheet.id)">Удалить</v-btn>
   </v-card>
   <div class="text-center pa-4">
     <v-dialog
       v-model="dialogModel"
-      max-width="400"
+      max-width="500"
     >
       <v-card
         prepend-icon="mdi-map-marker"
@@ -142,6 +163,7 @@ const btnDelete = (id: number) => {
         ></v-alert>
         <template v-slot:actions>
           <v-spacer></v-spacer>
+          <v-btn @click="clearSheet">Очистить</v-btn>
           <v-btn @click="closeModal(false)">Отмена</v-btn>
           <v-btn @click="closeModal(true)">Сохранить</v-btn>
         </template>
