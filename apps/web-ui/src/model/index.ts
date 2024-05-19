@@ -18,3 +18,8 @@ export type Sheet = {
   ancestryId?: number
   classId?: number
 }
+
+export type Profile = {
+  displayName?: string
+  login: string
+}

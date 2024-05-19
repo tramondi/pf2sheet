@@ -1,4 +1,4 @@
-import { Sheet } from '../model'
+import { Sheet, Profile } from '../model'
 
 export const createSheet = async (sheet: Sheet): Promise<Sheet> => {
   return new Promise<Sheet>(async (resolve, reject) => {
@@ -94,5 +94,34 @@ export const deleteSheet = async (id: number) => {
     }
 
     resolve(true)
+  })
+}
+
+export const updateProfile = (profile: Profile) => {
+  return new Promise<Profile>(async (resolve, reject) => {
+    console.log(`updating profile:`, profile)
+
+    const params = {
+      display_name: profile.displayName,
+    }
+
+    const body = JSON.stringify(params)
+    console.log(body)
+
+    const response = await fetch(`//localhost:8081/api/profile/`, {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json; charset=utf8",
+      },
+      credentials: "include",
+      body: body,
+    })
+
+    if (response.status != 200) {
+      console.log('status ' + response.status)
+      return reject(new Error(`response error code: ${response.status}`))
+    }
+
+    resolve(profile)
   })
 }

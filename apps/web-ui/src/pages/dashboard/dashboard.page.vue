@@ -20,13 +20,6 @@ const userStore = useUserStore()
 userStore.load()
 
 const { profile } = storeToRefs(userStore)
-const playerTitle = computed(() => {
-  const playerLoginPart = `Player ${profile.value.login}`
-  const playerNamePart = profile.value.displayName == null
-    ? '' : `// ${profile.value.displayName}`
-
-  return `${playerLoginPart} ${playerNamePart}`
-})
 
 knowledgeStore.load()
   .then((_) => {
@@ -55,6 +48,8 @@ const closeModal = (saveSheet: boolean) => {
   if (saveSheet && tmpSheet.value !== undefined) {
     console.log(`saving sheet: ${JSON.stringify(tmpSheet.value)}`)
 
+    tmpSheet.value.level = parseInt(tmpSheet.value.level)
+
     if (tmpSheet.value.hpCurrent !== undefined) {
       tmpSheet.value.hpCurrent = parseInt(tmpSheet.value.hpCurrent!)
     }
@@ -72,9 +67,9 @@ const closeModal = (saveSheet: boolean) => {
         console.log(`create request failed: ${err.message}`)
         createRequestStatus.value = false
       })
+  } else {
+    dialogModel.value = false
   }
-
-  dialogModel.value = false
 }
 
 const openImportModal = () => {
@@ -131,7 +126,6 @@ const h = '150px'
 </script>
 
 <template>
-  <h1 class="my-4">{{ playerTitle }}</h1>
   <div>
     <v-row justify="space-between">
       <v-col cols="4" md="4">
