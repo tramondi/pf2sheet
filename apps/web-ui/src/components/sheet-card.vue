@@ -33,18 +33,45 @@ knowledgeStore.load()
 const subtitle = computed(() => {
   const lvl = sheet.value.level
   const bg = sheet.value.background
+  const ancestryId = sheet.value.ancestryId
+  const classId = sheet.value.classId
 
-  const ancestry = knowledgeStore.getAncestryById(sheet.value.ancestryId)
-  const klass = knowledgeStore.getClassById(sheet.value.classId)
+  let parts = []
 
-  return `ур. ${lvl} ${ancestry?.title} ${klass?.title} (${bg})`
+  if (lvl !== undefined) {
+    parts.push(`ур. ${lvl}`)
+  }
+
+  if (ancestryId !== undefined) {
+    const ancestry = knowledgeStore.getAncestryById(ancestryId)
+    if (ancestry !== undefined) {
+      parts.push(ancestry.title)
+    }
+  }
+
+  if (classId !== undefined) {
+    const klass = knowledgeStore.getClassById(classId)
+    if (klass !== undefined) {
+      parts.push(klass.title)
+    }
+  }
+
+  if (bg !== undefined) {
+    parts.push(`(${bg})`)
+  }
+
+  return parts.join(' ')
 })
 
 const text = computed(() => {
+  if (sheet.value.hpCurrent === undefined || sheet.value.hpMax === undefined) {
+    return ''
+  }
+
   const hpCurrent = sheet.value.hpCurrent
   const hpMax = sheet.value.hpMax
 
-  return `${hpCurrent} / ${hpMax} хп`
+  return `${hpCurrent} / ${hpMax} ОЗ`
 })
 
 const dialogModel = ref(false)
@@ -60,6 +87,8 @@ const openModal = () => {
 
 const closeModal = (saveChanges: boolean) => {
   if (saveChanges && tmpSheet.value !== undefined) {
+    tmpSheet.value.level = parseInt(tmpSheet.value.level)
+
     if (tmpSheet.value.hpCurrent !== undefined) {
       tmpSheet.value.hpCurrent = parseInt(tmpSheet.value.hpCurrent!)
     }
@@ -135,7 +164,7 @@ const clearSheet = () => {
     >
       <v-card
         prepend-icon="mdi-map-marker"
-        title="Редактирование"
+        title="Редактирование листа персонажа"
       >
         <v-text-field label="Имя" v-model="tmpSheet.charName"></v-text-field>
         <v-text-field label="Уровень" v-model="tmpSheet.level"></v-text-field>

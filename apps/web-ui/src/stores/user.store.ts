@@ -1,17 +1,16 @@
 import { defineStore } from 'pinia'
 
+import { Profile } from '../model'
+
 type UserState = {
-  profile: {
-    displayName?: string
-    login: string
-  } | null
+  profile?: Profile
   loaded: boolean
 };
 
 export const useUserStore = defineStore<'user', UserState>({
   id: 'user',
   state: () => ({
-    profile: null,
+    profile: undefined,
     loaded: false,
   }),
   actions: {

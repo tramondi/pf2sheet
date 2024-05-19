@@ -26,6 +26,11 @@ export const createRouter = () => {
         name: 'auth',
         component: () => import('../pages/auth/auth.page.vue'),
       },
+      {
+        path: '/profile',
+        name: 'profile',
+        component: () => import('../pages/profile/profile.page.vue')
+      },
     ],
   })
 
