@@ -10,6 +10,7 @@ import {
 } from '../../stores'
 import SheetCard from '../../components/sheet-card.vue'
 import { createSheet } from '../../api'
+import { Sheet } from '../../model'
 
 const knowledgeStore = useKnowledgeStore()
 
@@ -39,6 +40,8 @@ const { ancestries, classes } = storeToRefs(knowledgeStore)
 const { sheets } = storeToRefs(dashboardStore)
 
 const dialogModel = ref(false)
+const importDialogModel = ref(false)
+const importStatus = ref(true)
 const createRequestStatus = ref(true)
 const tmpSheet = ref<Sheet>({level: 1})
 
@@ -74,7 +77,56 @@ const closeModal = (saveSheet: boolean) => {
   dialogModel.value = false
 }
 
-const w = '240px'
+const openImportModal = () => {
+  importDialogModel.value = true
+}
+
+const closeImportModal = () => {
+  importDialogModel.value = false
+}
+
+const runImport = () => {
+  const input = document.getElementById('sheetFileInput')
+  if (!input || input.files.length === 0) {
+    console.log('empty file input')
+    return
+  }
+
+  const reader = new FileReader()
+  reader.readAsText(input.files[0])
+
+  reader.onload = (_) => {
+    const parsedObj = JSON.parse(reader.result)
+
+    const _sheet = parsedObj as Sheet
+    if (!_sheet) {
+      console.log('failed to parse file as Sheet')
+      importStatus.value = false
+      return
+    }
+
+    _sheet.id = undefined
+    tmpSheet.value = {..._sheet}
+
+    importDialogModel.value = false
+    importStatus.value = true
+  }
+
+  reader.onerror = err => {
+    console.log(`reader error:`, err)
+    importStatus.value = false
+  }
+}
+
+const cancelImport = () => {
+  importDialogModel.value = false
+}
+
+const clearTmpSheet = () => {
+  tmpSheet.value = {} as Sheet
+}
+
+const w = '400px'
 const h = '150px'
 </script>
 
@@ -95,7 +147,7 @@ const h = '150px'
   <div class="text-center pa-4">
     <v-dialog
       v-model="dialogModel"
-      max-width="400"
+      max-width="500"
     >
       <v-card
         prepend-icon="mdi-map-marker"
@@ -139,8 +191,36 @@ const h = '150px'
         ></v-alert>
         <template v-slot:actions>
           <v-spacer></v-spacer>
+          <v-btn @click="clearTmpSheet">Очистить</v-btn>
+          <v-btn @click="openImportModal">Импорт</v-btn>
           <v-btn @click="closeModal(false)">Отмена</v-btn>
           <v-btn @click="closeModal(true)">Сохранить</v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="importDialogModel"
+      max-width="400px"
+    >
+      <v-card
+        prepend-icon="mdi-map-marker"
+        title="Импорт листа из JSON"
+        class="px-4"
+      >
+        <v-file-input
+          id="sheetFileInput"
+          label="Лист в формате JSON"
+        ></v-file-input>
+        <v-alert
+          v-if="importStatus === false"
+          color="error"
+          icon="$error"
+          title="Ошибка импорта"
+          text="Возможно ошибка в структуре файла"
+        ></v-alert>
+        <template v-slot:actions>
+          <v-btn @click="cancelImport">Отмена</v-btn>
+          <v-btn @click="runImport">Продолжить</v-btn>
         </template>
       </v-card>
     </v-dialog>
