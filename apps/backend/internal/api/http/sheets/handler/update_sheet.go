@@ -7,6 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"github.com/alionapermes/pf2sheet/internal/api/http/common"
 	"github.com/alionapermes/pf2sheet/internal/app/resource"
 	"github.com/alionapermes/pf2sheet/internal/domain/entity"
 )
@@ -61,9 +62,9 @@ func UpdateSheet(container resource.Container) echo.HandlerFunc {
 			PlayerID:   playerID,
 			Ancestry:   ancestry,
 			Class:      class,
-			FullName:   sheetDTO.FullName,
 			Level:      sheetDTO.Level,
-			Background: sheetDTO.Background,
+			FullName:   common.ClearTextPtr(sheetDTO.FullName),
+			Background: common.ClearTextPtr(sheetDTO.Background),
 			HpCurrent:  sheetDTO.HpCurrent,
 			HpMax:      sheetDTO.HpMax,
 		}

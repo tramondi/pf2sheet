@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"github.com/alionapermes/pf2sheet/internal/api/http/common"
 	common_dto "github.com/alionapermes/pf2sheet/internal/api/http/common/dto"
 	"github.com/alionapermes/pf2sheet/internal/app/resource"
 	"github.com/alionapermes/pf2sheet/internal/domain/entity"
@@ -56,8 +57,8 @@ func CreateSheet(container resource.Container) echo.HandlerFunc {
 			PlayerID:   playerID,
 			Ancestry:   ancestry,
 			Class:      class,
-			Background: reqDTO.Background,
-			FullName:   reqDTO.FullName,
+			Background: common.ClearTextPtr(reqDTO.Background),
+			FullName:   common.ClearTextPtr(reqDTO.FullName),
 			Level:      reqDTO.Level,
 			HpCurrent:  reqDTO.HpCurrent,
 			HpMax:      reqDTO.HpMax,
@@ -65,6 +66,7 @@ func CreateSheet(container resource.Container) echo.HandlerFunc {
 
 		id, err := createSheet.Execute(context.Background(), playerID, sheet)
 		if err != nil {
+			ctx.Logger().Errorf("failed to execute createSheet usecase: %s", err)
 			return ctx.NoContent(http.StatusInternalServerError)
 		}
 

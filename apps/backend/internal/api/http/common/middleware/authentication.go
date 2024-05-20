@@ -16,16 +16,19 @@ func Authentication(container resource.Container) echo.MiddlewareFunc {
 		return func(ctx echo.Context) error {
 			cookie, err := ctx.Cookie("session_token")
 			if err != nil {
+				ctx.Logger().Error("failed to get session token from ctx")
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
 
 			token := cookie.Value
 			if token == "" {
+				ctx.Logger().Error("session token is empty")
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
 
 			session, err := sessionsRepo.GetByToken(context.Background(), token)
 			if err != nil {
+				ctx.Logger().Errorf("failed to get session by token: %s", err)
 				return ctx.NoContent(http.StatusUnauthorized)
 			}
 

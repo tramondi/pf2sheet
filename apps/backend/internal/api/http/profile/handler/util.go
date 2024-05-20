@@ -15,6 +15,8 @@ func unsetSessionCookie(ctx echo.Context) echo.Context {
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
 		Expires:  time.Time{},
 	})
 

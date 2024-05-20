@@ -2,6 +2,11 @@
 import { useField, useForm } from 'vee-validate'
 
 import { useUserStore } from '../../../stores'
+import { signup } from '../../../api'
+
+const props = defineProps<{
+  returnUrl: string
+}>()
 
 const pattern = /[-0-9a-zA-Z_.]{0,30}/
 
@@ -48,30 +53,13 @@ const password = useField('password')
 const displayName = useField('displayName')
 
 const submit = async (_) => {
-  const params = {
-    login: login.value.value,
-    password: password.value.value,
-    display_name: displayName.value.value,
-  }
-
-  const body = JSON.stringify(params)
-  console.log(body)
-
-  const response = await fetch('//localhost:8081/auth/signup', {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json; charset=utf8",
-    },
-    credentials: "include",
-    body: body,
-  })
-
-  if (response.status != 200) {
-    console.log('status ' + response.statue)
-    return
-  }
-
-  window.location.replace('/#/dashboard')
+  await signup(
+    login.value.value,
+    password.value.value,
+    displayName.value.value,
+  )
+    .then(_ => window.location.href = props.returnUrl)
+    .catch(err => console.log(`signup error: ${err.message}`))
 }
 </script>
 

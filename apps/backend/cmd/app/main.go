@@ -5,6 +5,9 @@ import (
 )
 
 func main() {
-	s := server.Server{}
-	s.Start()
+	serv := server.Server{}
+
+	config := server.InitConfig()
+
+	_ = serv.Start(config)
 }

@@ -33,6 +33,7 @@ func DeleteSheet(container resource.Container) echo.HandlerFunc {
 			playerID,
 			entity.SheetID(sheetID),
 		); err != nil {
+			ctx.Logger().Errorf("failed to execute deleteSheet usecase: %s", err)
 			return ctx.NoContent(http.StatusInternalServerError)
 		}
 

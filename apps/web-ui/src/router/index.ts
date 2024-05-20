@@ -12,11 +12,6 @@ export const createRouter = () => {
     history: createWebHashHistory(),
     routes: [
       {
-        path: '/',
-        name: 'home',
-        component: () => import('../pages/home/home.page.vue'),
-      },
-      {
         path: '/dashboard',
         name: 'dashboard',
         component: () => import('../pages/dashboard/dashboard.page.vue'),
@@ -43,8 +38,8 @@ export const createRouter = () => {
     const userStore = useUserStore()
     await userStore.load()
 
-    if (authRequired && userStore.profile == null) {
-      console.log('redierect to auth')
+    if (authRequired && userStore.profile === undefined) {
+      console.log('redirect to auth')
       return '/auth'
     }
   })

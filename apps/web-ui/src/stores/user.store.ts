@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 
 import { Profile } from '../model'
+import { getProfile } from '../api'
 
 type UserState = {
   profile?: Profile
   loaded: boolean
-};
+}
 
 export const useUserStore = defineStore<'user', UserState>({
   id: 'user',
@@ -19,24 +20,12 @@ export const useUserStore = defineStore<'user', UserState>({
         return
       }
 
-      const response = await fetch('//localhost:8081/api/profile/', {
-        method: 'GET',
-        credentials: "include",
-      })
-
-      if (response.status != 200) {
-        return
-      }
-
-      const body = await response.json()
-      console.log(JSON.stringify(body))
-
-      this.profile = {
-        displayName: body.data.display_name,
-        login: body.data.login,
-      }
-
-      this.loaded = true
+      await getProfile()
+        .then(profile => {
+          this.profile = profile
+          this.loaded = true
+        })
+        .catch(err => console.log(`unauthorized: ${err.message}`))
     },
   },
 })
