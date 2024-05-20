@@ -44,7 +44,7 @@ const newSheet = () => {
   dialogModel.value = true
 }
 
-const closeModal = (saveSheet: boolean) => {
+const closeModal = async (saveSheet: boolean) => {
   if (saveSheet && tmpSheet.value !== undefined) {
     console.log(`saving sheet: ${JSON.stringify(tmpSheet.value)}`)
 
@@ -58,10 +58,11 @@ const closeModal = (saveSheet: boolean) => {
       tmpSheet.value.hpMax = parseInt(tmpSheet.value.hpMax!)
     }
 
-    createSheet(tmpSheet.value)
+    await createSheet(tmpSheet.value)
       .then(sheet => {
         dashboardStore.reloadSheets()
         createRequestStatus.value = true
+        dialogModel.value = false
       })
       .catch(err => {
         console.log(`create request failed: ${err.message}`)

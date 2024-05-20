@@ -2,6 +2,7 @@ package server
 
 import (
 	"database/sql"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -20,14 +21,16 @@ type Server struct {
 	logger *slog.Logger
 	config Config
 
-	e *echo.Echo
+	router *echo.Echo
 }
 
-func (self *Server) Start() {
-	self.e = echo.New()
-	self.e.Use(middleware.Logger())
-	self.e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost"},
+func (self *Server) Start(config Config) error {
+	self.config = config
+
+	self.router = echo.New()
+	self.router.Use(middleware.Logger())
+	self.router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: self.config.AllowedOrigins,
 		AllowMethods: []string{
 			http.MethodGet,
 			http.MethodPost,
@@ -45,10 +48,7 @@ func (self *Server) Start() {
 
 	self.logger = slog.New(tint.NewHandler(os.Stderr, nil))
 
-	// #####
-	const dsn = "postgres://postgres:postgres@db:5432/postgres?sslmode=disable&client_encoding=UTF8"
-
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("postgres", self.config.DSN)
 	if err != nil {
 		panic(err)
 	}
@@ -60,9 +60,8 @@ func (self *Server) Start() {
 	if err != nil {
 		panic(err)
 	}
-	// #####
 
 	self.initRoutes(container)
 
-	self.e.Start(":8080")
+	return self.router.Start(fmt.Sprintf(":%d", self.config.Port))
 }

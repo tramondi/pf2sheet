@@ -6,7 +6,7 @@ import Signup from './components/signup.vue'
 
 const tab = ref<string>()
 
-let returnUrl = '/#/dashboard'
+const returnUrl = '/#/dashboard'
 </script>
 
 <template>
@@ -19,10 +19,10 @@ let returnUrl = '/#/dashboard'
     <v-card-text>
       <v-tabs-window v-model="tab">
         <v-tabs-window-item value="signin">
-          <Signin :return-url="returnURL"/>
+          <Signin :return-url="returnUrl"/>
         </v-tabs-window-item>
         <v-tabs-window-item value="signup">
-          <Signup :return-url="returnURL"/>
+          <Signup :return-url="returnUrl"/>
         </v-tabs-window-item>
       </v-tabs-window>
     </v-card-text>

@@ -35,6 +35,7 @@ func UpdateProfile(container resource.Container) echo.HandlerFunc {
 		}
 
 		if err := updProfile.Execute(context.Background(), player); err != nil {
+			ctx.Logger().Errorf("failed to execute updProfile usecase: %s", err)
 			return ctx.NoContent(http.StatusInternalServerError)
 		}
 

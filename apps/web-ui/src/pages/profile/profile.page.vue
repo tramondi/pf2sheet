@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { Profile } from '../../model'
-import { updateProfile } from '../../api'
+import { updateProfile, signout } from '../../api'
 import { useUserStore } from '../../stores'
 
 const userStore = useUserStore()
@@ -29,6 +29,12 @@ const btnSaveProfile = () => {
       saveRequestStatus.value = false
     })
 }
+
+const btnSignout = async () => {
+  await signout()
+
+  window.location.href = '/#/auth'
+}
 </script>
 
 <template>
@@ -51,6 +57,7 @@ const btnSaveProfile = () => {
       <v-spacer></v-spacer>
       <template v-slot:actions>
         <v-spacer></v-spacer>
+        <v-btn @click="btnSignout">Выйти</v-btn>
         <v-btn @click="btnDropChanges">Сбросить изменения</v-btn>
         <v-btn @click="btnSaveProfile">Сохранить</v-btn>
       </template>

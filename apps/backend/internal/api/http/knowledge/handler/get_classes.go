@@ -21,7 +21,8 @@ func GetClasses(container resource.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		classes, err := getAllClasses.Execute(context.Background())
 		if err != nil {
-			return ctx.String(http.StatusInternalServerError, "internal error")
+			ctx.Logger().Errorf("failed to execute getAllClasses usecase: %s", err)
+			return ctx.NoContent(http.StatusInternalServerError)
 		}
 
 		DTOs := make([]dto.Class, 0, len(classes))

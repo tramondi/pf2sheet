@@ -17,17 +17,17 @@ import (
 func (self *Server) initRoutes(container resource.Container) {
 	commonAuthMiddleware := common_middleware.Authentication(container)
 
-	self.e.GET("/ping", func(c echo.Context) error {
+	self.router.GET("/ping", func(c echo.Context) error {
 		return c.String(http.StatusOK, "pong")
 	})
 
-	groupAuth := self.e.Group("/auth", auth_middleware.Authentication(container))
+	groupAuth := self.router.Group("/auth", auth_middleware.Authentication(container))
 	{
 		groupAuth.POST("/signin", auth_handler.Signin(container))
 		groupAuth.POST("/signup", auth_handler.Signup(container))
 	}
 
-	groupAPI := self.e.Group("/api", commonAuthMiddleware)
+	groupAPI := self.router.Group("/api", commonAuthMiddleware)
 	{
 		groupKnowledge := groupAPI.Group("/knowledge")
 		{

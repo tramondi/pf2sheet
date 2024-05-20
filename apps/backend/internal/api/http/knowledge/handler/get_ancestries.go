@@ -21,7 +21,8 @@ func GetAncestries(container resource.Container) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		ancestries, err := getAllAncestries.Execute(context.TODO())
 		if err != nil {
-			return ctx.String(http.StatusInternalServerError, "internal error")
+			ctx.Logger().Errorf("failed to execute getAllAncestries usecase: %s", err)
+			return ctx.NoContent(http.StatusInternalServerError)
 		}
 
 		DTOs := make([]dto.Ancestry, 0, len(ancestries))

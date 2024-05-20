@@ -30,6 +30,7 @@ func Signin(container resource.Container) echo.HandlerFunc {
 			creds.Password,
 		)
 		if err != nil {
+			ctx.Logger().Errorf("failed to execute signin usecase: %s", err)
 			return ctx.NoContent(http.StatusUnauthorized)
 		}
 

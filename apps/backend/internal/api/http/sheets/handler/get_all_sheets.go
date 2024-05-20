@@ -38,6 +38,7 @@ func GetAllSheets(container resource.Container) echo.HandlerFunc {
 
 		sheets, err := getAllSheets.Execute(context.Background(), id)
 		if err != nil {
+			ctx.Logger().Errorf("failed to execute getAllSheets usecase: %s", err)
 			return ctx.NoContent(http.StatusInternalServerError)
 		}
 

@@ -18,6 +18,7 @@ func setSessionCookie(ctx echo.Context, session entity.Session) echo.Context {
 		Domain:   "localhost",
 		HttpOnly: true,
 		Secure:   false,
+		// SameSite: http.SameSiteStrictMode,
 	})
 
 	return ctx
