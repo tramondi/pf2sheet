@@ -72,6 +72,7 @@ func (self *SheetsRepo) GetByPlayerID(
 			Level:      row.Sheet.Level,
 			HpCurrent:  row.Sheet.HpCurrent,
 			HpMax:      row.Sheet.HpMax,
+			Note:       row.Sheet.Note,
 		}
 
 		sheets = append(sheets, sheet)
@@ -106,6 +107,7 @@ func (self *SheetsRepo) Add(
 			Level:      sheet.Level,
 			HpCurrent:  sheet.HpCurrent,
 			HpMax:      sheet.HpMax,
+			Note:       sheet.Note,
 		},
 	}
 
@@ -154,6 +156,7 @@ func (self *SheetsRepo) Update(
 			Level:      sheet.Level,
 			HpCurrent:  sheet.HpCurrent,
 			HpMax:      sheet.HpMax,
+			Note:       sheet.Note,
 		},
 	}
 
@@ -205,6 +208,7 @@ func (self *SheetsRepo) GetByID(
 		Background: output.Sheet.Background,
 		HpCurrent:  output.Sheet.HpCurrent,
 		HpMax:      output.Sheet.HpMax,
+		Note:       output.Sheet.Note,
 	}
 
 	return sheet, nil

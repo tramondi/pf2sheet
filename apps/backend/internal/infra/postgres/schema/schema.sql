@@ -139,7 +139,8 @@ CREATE TABLE public.sheets (
     fullname character varying(60),
     level smallint,
     hp_current smallint,
-    hp_max smallint
+    hp_max smallint,
+    note text
 );
 
 
@@ -334,4 +335,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20240422172356'),
     ('20240422175222'),
     ('20240426153124'),
-    ('20240426155631');
+    ('20240426155631'),
+    ('20240524133805');

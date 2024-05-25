@@ -21,6 +21,7 @@ func CreateSheet(container resource.Container) echo.HandlerFunc {
 		Level      *int16  `json:"level,omitempty"`
 		HpCurrent  *int16  `json:"hp_current,omitempty"`
 		HpMax      *int16  `json:"hp_max,omitempty"`
+		Note       *string `json:"note,omitempty"`
 	}
 
 	type data struct {
@@ -59,6 +60,7 @@ func CreateSheet(container resource.Container) echo.HandlerFunc {
 			Class:      class,
 			Background: common.ClearTextPtr(reqDTO.Background),
 			FullName:   common.ClearTextPtr(reqDTO.FullName),
+			Note:       common.EscapeScriptsPtr(reqDTO.Note),
 			Level:      reqDTO.Level,
 			HpCurrent:  reqDTO.HpCurrent,
 			HpMax:      reqDTO.HpMax,

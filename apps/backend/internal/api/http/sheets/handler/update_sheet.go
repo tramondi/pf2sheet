@@ -21,6 +21,7 @@ func UpdateSheet(container resource.Container) echo.HandlerFunc {
 		Background *string `json:"background"`
 		HpCurrent  *int16  `json:"hp_current"`
 		HpMax      *int16  `json:"hp_max"`
+		Note       *string `json:"note"`
 	}
 
 	updateSheet := container.Usecases.UpdateSheet
@@ -65,6 +66,7 @@ func UpdateSheet(container resource.Container) echo.HandlerFunc {
 			Level:      sheetDTO.Level,
 			FullName:   common.ClearTextPtr(sheetDTO.FullName),
 			Background: common.ClearTextPtr(sheetDTO.Background),
+			Note:       common.EscapeScriptsPtr(sheetDTO.Note),
 			HpCurrent:  sheetDTO.HpCurrent,
 			HpMax:      sheetDTO.HpMax,
 		}

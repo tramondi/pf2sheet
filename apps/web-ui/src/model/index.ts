@@ -17,6 +17,7 @@ export type Sheet = {
   background?: string
   ancestryId?: number
   classId?: number
+  note?: string
 }
 
 export type Profile = {
