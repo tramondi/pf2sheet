@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
 import { ListItem } from '../domain/types'
 import { Sheet } from '../model'
@@ -23,6 +24,11 @@ const { ancestries, classes } = storeToRefs(knowledgeStore)
 const dashboardStore = useDashboardStore()
 
 const sheet = ref(props.sheet)
+
+const editor = ClassicEditor
+const editorConfig = ref({
+  // todo
+})
 
 knowledgeStore.load()
   .then((_) => {
@@ -183,6 +189,20 @@ const clearSheet = () => {
           item-value="id"
           :items="classes"
         ></v-select>
+        <div class="overflow-auto pb-8">
+          <v-label
+            for="note-editor"
+            class="flex flex-column align-start px-2"
+            text="Примечание"
+          >
+            <ckeditor
+              id="note-editor"
+              :editor="editor"
+              :config="editorConfig"
+              v-model="tmpSheet.note"
+            ></ckeditor>
+          </v-label>
+        </div>
         <v-alert
           v-if="updateRequestStatus === false"
           color="error"

@@ -1,5 +1,7 @@
 import { createApp } from 'vue'
 
+import CKEditor from '@ckeditor/ckeditor5-vue'
+
 import './style.css'
 import App from './App.vue'
 import { createRouter } from './router'
@@ -14,5 +16,6 @@ const app = createApp(App)
   .use(router)
   .use(store)
   .use(vuetify)
+  .use(CKEditor)
 
 router.isReady().then(() => app.mount('#app'))

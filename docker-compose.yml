@@ -17,14 +17,12 @@ services:
     ports:
       - 8081:8080
     depends_on:
-      - db
+      - postgres
     networks:
-      - db_network
-  db:
-    container_name: pf2sheet-db
+      - app_network
+  postgres:
+    container_name: pf2sheet-postgres
     image: postgres:15
-    ports:
-      - 5432:5432
     volumes:
       - ./data:/var/lib/postgresql/data
     environment:
@@ -32,7 +30,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     networks:
-      - db_network
+      - app_network
 networks:
-  db_network:
+  app_network:
     driver: bridge

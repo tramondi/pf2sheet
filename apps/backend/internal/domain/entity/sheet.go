@@ -16,4 +16,5 @@ type Sheet struct {
 	Level      *int16
 	HpCurrent  *int16
 	HpMax      *int16
+	Note       *string
 }

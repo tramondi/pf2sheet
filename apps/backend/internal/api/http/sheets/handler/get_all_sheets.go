@@ -22,6 +22,7 @@ func GetAllSheets(container resource.Container) echo.HandlerFunc {
 		Level      *int16  `json:"level,omitempty"`
 		HpCurrent  *int16  `json:"hp_current,omitempty"`
 		HpMax      *int16  `json:"hp_max,omitempty"`
+		Note       *string `json:"note,omitempty"`
 	}
 
 	type data struct {
@@ -64,6 +65,7 @@ func GetAllSheets(container resource.Container) echo.HandlerFunc {
 				Level:      sheet.Level,
 				HpCurrent:  sheet.HpCurrent,
 				HpMax:      sheet.HpMax,
+				Note:       sheet.Note,
 			})
 		}
 

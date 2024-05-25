@@ -8,4 +8,5 @@ type Sheet struct {
 	Level      *int16  `db:"level"`
 	HpCurrent  *int16  `db:"hp_current"`
 	HpMax      *int16  `db:"hp_max"`
+	Note       *string `db:"note"`
 }

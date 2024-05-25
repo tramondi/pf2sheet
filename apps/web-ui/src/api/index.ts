@@ -14,6 +14,7 @@ export const createSheet = async (sheet: Sheet): Promise<Sheet> => {
       level: sheet.level > 0 ? sheet.level : undefined,
       hp_current: sheet.hpCurrent,
       hp_max: sheet.hpMax,
+      note: sheet.note,
     }
 
     const body = JSON.stringify(params)
@@ -58,6 +59,7 @@ export const updateSheet = (sheet: Sheet) => {
       level: sheet.level > 0 ? sheet.level : undefined,
       hp_current: sheet.hpCurrent,
       hp_max: sheet.hpMax,
+      note: sheet.note,
     }
 
     const body = JSON.stringify(params)
@@ -174,6 +176,7 @@ export const getSheets = () => {
       background: item.background,
       ancestryId: item.ancestry_id,
       classId: item.class_id,
+      note: item.note,
     } as Sheet))
 
     return resolve(sheets)

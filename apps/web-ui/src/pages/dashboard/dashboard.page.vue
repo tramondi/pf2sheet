@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { mdiPlus } from '@mdi/js'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
 import {
   useDashboardStore,
@@ -37,6 +38,11 @@ const importDialogModel = ref(false)
 const importStatus = ref(true)
 const createRequestStatus = ref(true)
 const tmpSheet = ref<Sheet>({level: 1})
+
+const editor = ClassicEditor
+const editorConfig = ref({
+  // todo
+})
 
 const newSheet = () => {
   console.log(`tmpsheet: ${JSON.stringify(tmpSheet.value)}`)
@@ -122,6 +128,8 @@ const clearTmpSheet = () => {
   tmpSheet.value = {} as Sheet
 }
 
+const dbg = (who: string) => alert(`${who} clicked`)
+
 const w = '400px'
 const h = '150px'
 </script>
@@ -177,6 +185,20 @@ const h = '150px'
           item-value="id"
           :items="classes"
         ></v-select>
+        <div class="overflow-auto pb-8">
+          <v-label
+            for="note-editor"
+            class="flex flex-column align-start px-2"
+            text="Примечание"
+          >
+            <ckeditor
+              id="note-editor"
+              :editor="editor"
+              :config="editorConfig"
+              v-model="tmpSheet.note"
+            ></ckeditor>
+          </v-label>
+        </div>
         <v-alert
           v-if="createRequestStatus === false"
           color="error"

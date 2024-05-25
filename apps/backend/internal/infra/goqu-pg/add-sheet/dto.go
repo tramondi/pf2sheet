@@ -9,4 +9,5 @@ type Sheet struct {
 	Level      *int16  `db:"level" goqu:"omitnil"`
 	HpCurrent  *int16  `db:"hp_current" goqu:"omitnil"`
 	HpMax      *int16  `db:"hp_max" goqu:"omitnil"`
+	Note       *string `db:"note" goqu:"omitnil"`
 }

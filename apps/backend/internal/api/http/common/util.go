@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/AlekSi/pointer"
@@ -18,6 +19,28 @@ func ClearTextPtr(text *string) *string {
 	}
 
 	out := ClearText(*text)
+
+	return &out
+}
+
+func EscapeScripts(text string) string {
+	scriptRe := regexp.MustCompile(`(?s)<script.*<\/script>`)
+	endScriptRe := regexp.MustCompile(`</script>`)
+
+	result := scriptRe.ReplaceAllStringFunc(text, func(s string) string {
+		index := endScriptRe.FindStringIndex(s)
+		return strings.TrimSpace(s[index[1]:])
+	})
+
+	return result
+}
+
+func EscapeScriptsPtr(text *string) *string {
+	if text == nil {
+		return nil
+	}
+
+	out := EscapeScripts(*text)
 
 	return &out
 }
