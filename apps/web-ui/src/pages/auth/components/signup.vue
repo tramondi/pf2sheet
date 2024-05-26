@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useField, useForm } from 'vee-validate'
+import VueRecaptcha from 'vue3-recaptcha2'
+//import { useRecaptcha } from 'vue3-recaptcha2'
 
 import { useUserStore } from '../../../stores'
 import { signup } from '../../../api'
@@ -52,7 +55,16 @@ const login = useField('login')
 const password = useField('password')
 const displayName = useField('displayName')
 
+const recaptchaOK = ref(false)
+
 const submit = async (_) => {
+  if (!recaptchaOK.value) {
+    alert('Капчу!')
+    return
+  }
+
+  recaptchaOK.value = false
+
   await signup(
     login.value.value,
     password.value.value,
@@ -60,6 +72,25 @@ const submit = async (_) => {
   )
     .then(_ => window.location.href = props.returnUrl)
     .catch(err => console.log(`signup error: ${err.message}`))
+}
+
+const recaptchaVerified = (response) => {
+  console.log(`recaptcha verified`)
+  recaptchaOK.value = true
+}
+
+const recaptchaExpired = () => {
+  console.log(`recaptcha expired`)
+  recaptchaOK.value = false
+}
+
+const recaptchaError = (reason) => {
+  console.log(`recaptcha error:`, reason)
+}
+
+const recaptchaFailed = () => {
+  console.log(`recaptcha failed`)
+  recaptchaOK.value = false
 }
 </script>
 
@@ -84,7 +115,20 @@ const submit = async (_) => {
         label="Имя"
       ></v-text-field>
 
-      <v-btn class="me-4" type="submit">Зарегистрироваться</v-btn>
+      <vue-recaptcha
+        sitekey="6Ld3wugpAAAAACjleYYzRfLFVvh4V40WV2N25Cov"
+        size="normal" 
+        theme="light"
+        hl="tr"
+        :loadingTimeout="30000"
+        @verify="recaptchaVerified"
+        @expire="recaptchaExpired"
+        @fail="recaptchaFailed"
+        @error="recaptchaError"
+        ref="vueRecaptcha"
+      ></vue-recaptcha>
+
+      <v-btn class="my-4" type="submit">Зарегистрироваться</v-btn>
     </form>
   </div>
 </template>
