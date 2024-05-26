@@ -10,7 +10,7 @@ const returnUrl = '/#/dashboard'
 </script>
 
 <template>
-  <v-card :width="400" :height="400">
+  <v-card :width="400" :height="450">
     <v-tabs v-model="tab" align-tabs="center">
       <v-tab value="signin">Вход</v-tab>
       <v-tab value="signup">Регистрация</v-tab>
