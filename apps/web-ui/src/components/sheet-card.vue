@@ -80,6 +80,22 @@ const text = computed(() => {
   return `${hpCurrent} / ${hpMax} ОЗ`
 })
 
+const hpBarShow = ref(false)
+
+const hpBarModel = computed(() => {
+  if (sheet.value.hpCurrent === undefined || sheet.value.hpMax === undefined) {
+    hpBarShow.value = false
+    return
+  }
+
+  const hpCurrent = sheet.value.hpCurrent as int
+  const hpMax = sheet.value.hpMax as int
+
+  hpBarShow.value = true
+
+  return hpCurrent / (hpMax / 100)
+})
+
 const dialogModel = ref(false)
 const updateRequestStatus = ref(true)
 const tmpSheet = ref<Sheet|undefined>()
@@ -155,10 +171,18 @@ const clearSheet = () => {
   <v-card
     :title="props.sheet.charName"
     :subtitle="subtitle"
-    :text="text"
     :min-width="props.minWidth"
     :min-height="props.minHeight"
   >
+    <template v-slot:text>
+      <v-progress-linear
+        v-show="hpBarShow"
+        v-model="hpBarModel"
+        :height="10"
+        class="my-4"
+      ></v-progress-linear>
+      <p>{{ text }}</p>
+    </template>
     <v-btn @click="btnExport">Экспорт</v-btn>
     <v-btn @click="openModal">Изменить</v-btn>
     <v-btn @click="btnDelete(sheet.id)">Удалить</v-btn>

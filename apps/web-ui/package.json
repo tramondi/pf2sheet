@@ -13,7 +13,6 @@
     "@ckeditor/ckeditor5-vue": "^5.1.0",
     "@mdi/js": "^7.4.47",
     "axios": "^1.6.8",
-    "node-gd": "^3.0.0",
     "pinia": "^2.1.7",
     "primevue": "^3.51.0",
     "typescript": "^5.4.5",
