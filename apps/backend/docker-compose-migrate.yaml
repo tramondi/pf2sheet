@@ -24,7 +24,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     networks:
-      - db_network
+      - migrate_network
 networks:
   migrate_network:
     driver: bridge
